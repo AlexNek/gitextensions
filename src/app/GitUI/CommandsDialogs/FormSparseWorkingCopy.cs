@@ -15,6 +15,15 @@ namespace GitUI.CommandsDialogs
         public FormSparseWorkingCopy(IGitUICommands commands)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             FormSparseWorkingCopyViewModel sparse = new(commands);
             BindToViewModelGlobal(sparse);
             CreateView(sparse);

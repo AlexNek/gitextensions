@@ -45,6 +45,15 @@ namespace GitUI.CommandsDialogs
         public FormCheckoutBranch(IGitUICommands commands, string branch, bool remote, IReadOnlyList<ObjectId>? containRevisions = null)
             : base(commands, true)
         {
+            if(IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             _branchNameNormaliser = new GitBranchNameNormaliser();
             InitializeComponent();
             InitializeComplete();

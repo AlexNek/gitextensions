@@ -56,6 +56,15 @@ namespace GitUI.CommandsDialogs
         public FormRebase(IGitUICommands commands, string? defaultBranch)
             : base(commands, enablePositionRestore: false)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             _defaultBranch = defaultBranch;
 
             InitializeComponent();

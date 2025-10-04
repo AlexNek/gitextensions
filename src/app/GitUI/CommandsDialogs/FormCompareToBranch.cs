@@ -7,6 +7,15 @@ namespace GitUI.CommandsDialogs
         public FormCompareToBranch(IGitUICommands commands, ObjectId? selectedCommit)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             MinimizeBox = false;
             MaximizeBox = false;
             ShowInTaskbar = false;

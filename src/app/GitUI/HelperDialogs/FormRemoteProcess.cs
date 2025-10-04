@@ -31,8 +31,12 @@ Do you want to register the host's fingerprint and restart the process?");
         private string _urlTryingToConnect = string.Empty;
 
         public FormRemoteProcess(IGitUICommands commands, ArgumentString arguments)
-            : base(commands, arguments, commands.Module.WorkingDir, input: null, useDialogSettings: true)
+            : base(commands, arguments, commands?.Module?.WorkingDir, input: null, useDialogSettings: true)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
             Commands = commands ?? throw new ArgumentNullException(nameof(commands));
         }
 

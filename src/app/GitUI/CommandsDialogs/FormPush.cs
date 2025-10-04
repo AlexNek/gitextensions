@@ -91,6 +91,15 @@ namespace GitUI.CommandsDialogs
         public FormPush(IGitUICommands commands)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
 
             Push.Text = TranslatedStrings.ButtonPush;

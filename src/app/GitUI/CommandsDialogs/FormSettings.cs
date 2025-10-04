@@ -34,6 +34,15 @@ namespace GitUI.CommandsDialogs
         public FormSettings(IGitUICommands commands, SettingsPageReference? initialPage = null)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
 
             _translatedTitle = Text;

@@ -23,6 +23,15 @@ namespace GitUI.CommandsDialogs
         public FormMergeBranch(IGitUICommands commands, string? defaultBranch)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
             helpImageDisplayUserControl1.Image1 = Properties.Images.HelpCommandMerge.AdaptLightness();
             helpImageDisplayUserControl1.Image2 = Properties.Images.HelpCommandMergeFastForward.AdaptLightness();

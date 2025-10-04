@@ -608,6 +608,10 @@ namespace GitUI.Editor
             CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return Task.CompletedTask;
+            }
             return ShowOrDeferAsync(
                 text.Length,
                 () =>

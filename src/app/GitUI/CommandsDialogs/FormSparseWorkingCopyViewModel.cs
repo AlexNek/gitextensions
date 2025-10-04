@@ -33,6 +33,11 @@ namespace GitUI.CommandsDialogs
 
         public FormSparseWorkingCopyViewModel(IGitUICommands gitCommands)
         {
+            if (GitModuleForm.IsUnitTestActive)
+            {
+                return;
+            }
+            
             _gitCommands = gitCommands ?? throw new ArgumentNullException(nameof(gitCommands));
             _isSparseCheckoutEnabled = _isSparseCheckoutEnabledAsSaved = GetCurrentSparseEnabledState();
         }

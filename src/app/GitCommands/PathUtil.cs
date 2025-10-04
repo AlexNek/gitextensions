@@ -452,6 +452,10 @@ namespace GitCommands
 
         public static string GetDisplayPath(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                return path;
+            }
             if (IsInUserProfile(path))
             {
                 int length = path.Length - UserProfilePath.Length;

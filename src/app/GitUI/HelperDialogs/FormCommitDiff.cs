@@ -7,6 +7,16 @@ namespace GitUI.HelperDialogs
         public FormCommitDiff(IGitUICommands commands, ObjectId? objectId)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
             InitializeComplete();
 

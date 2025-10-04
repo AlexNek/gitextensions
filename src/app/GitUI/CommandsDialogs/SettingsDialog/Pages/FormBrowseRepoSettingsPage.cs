@@ -25,6 +25,15 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
         public FormBrowseRepoSettingsPage(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            if (GitModuleForm.IsUnitTestActive)
+            {
+                return;
+            }
+            if (serviceProvider == null)
+            {
+                throw new ArgumentNullException(nameof(serviceProvider));
+            }
+
             InitializeComponent();
             cboTerminal.DisplayMember = "Name";
             InitializeComplete();

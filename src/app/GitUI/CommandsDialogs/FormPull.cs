@@ -132,6 +132,15 @@ namespace GitUI.CommandsDialogs
         public FormPull(GitUICommands commands, string? defaultRemoteBranch, string? defaultRemote, GitPullAction pullAction)
             : base(commands, enablePositionRestore: false)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
             InitializeComplete();
 

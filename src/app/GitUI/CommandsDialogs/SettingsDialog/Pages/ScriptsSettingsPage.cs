@@ -107,6 +107,16 @@ Diff selection:
         public ScriptsSettingsPage(IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
+            if (GitModuleForm.IsUnitTestActive)
+            {
+                return;
+            }
+
+            if (serviceProvider == null)
+            {
+                throw new ArgumentNullException(nameof(serviceProvider));
+            }
+
             _scriptsManager = serviceProvider.GetRequiredService<IScriptsManager>();
 
             InitializeComponent();

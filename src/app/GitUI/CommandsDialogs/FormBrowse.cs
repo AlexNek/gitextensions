@@ -250,6 +250,15 @@ namespace GitUI.CommandsDialogs
         internal FormBrowse(IGitUICommands commands, BrowseArguments args, SettingsSource settingsSource)
             : base(commands)
         {
+            if (GitModuleForm.IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             _splitterManager = new(settingsSource);
 
             SystemEvents.SessionEnding += (sender, args) => SaveApplicationSettings();

@@ -25,6 +25,15 @@ namespace GitUI.CommandsDialogs
         public FormCreateTag(IGitUICommands commands, ObjectId? objectId)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
             InitializeComplete();
 

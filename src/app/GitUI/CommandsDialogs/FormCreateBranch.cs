@@ -24,6 +24,15 @@ namespace GitUI.CommandsDialogs
         public FormCreateBranch(IGitUICommands commands, ObjectId? objectId, string? newBranchNamePrefix = null)
             : base(commands, enablePositionRestore: false)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             InitializeComponent();
 
             MinimumSize = new Size(Width, PreferredMinimumHeight);

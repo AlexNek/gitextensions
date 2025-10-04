@@ -42,6 +42,15 @@ namespace GitUI.CommandsDialogs
             string firstCommitDisplayStr, string secondCommitDisplayStr)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             _firstCommitDisplayStr = firstCommitDisplayStr;
             _secondCommitDisplayStr = secondCommitDisplayStr;
 

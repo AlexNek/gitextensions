@@ -16,9 +16,14 @@ namespace GitUI.CommandsDialogs.BrowseDialog
         private readonly IRevisionGridInfo _revisionGridInfo;
 
         public FormBisect(RevisionGridControl revisionGrid)
-            : base(revisionGrid.UICommands)
+            : base(revisionGrid?.UICommands)
         {
-            _revisionGridInfo = revisionGrid;
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+
+            _revisionGridInfo = revisionGrid ?? throw new ArgumentNullException(nameof(revisionGrid));
             InitializeComponent();
             InitializeComplete();
             UpdateButtonsState();

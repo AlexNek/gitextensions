@@ -21,6 +21,15 @@ namespace GitUI.HelperDialogs
         private FormProcess(IGitUICommands commands, ConsoleOutputControl? outputControl, ArgumentString arguments, string workingDirectory, string? input, bool useDialogSettings, string? process)
             : base(commands, outputControl, useDialogSettings)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             ProcessCallback = ProcessStart;
             AbortCallback = ProcessAbort;
             Remote = "";
@@ -49,8 +58,11 @@ namespace GitUI.HelperDialogs
                 Text += $" ({displayPath})";
             }
 
-            ConsoleOutput.ProcessExited += delegate { OnExit(ConsoleOutput.ExitCode); };
-            ConsoleOutput.DataReceived += DataReceivedCore;
+            if (ConsoleOutput != null)
+            {
+                ConsoleOutput.ProcessExited += delegate { OnExit(ConsoleOutput.ExitCode); };
+                ConsoleOutput.DataReceived += DataReceivedCore;
+            }
         }
 
         public FormProcess(IGitUICommands commands, ArgumentString arguments, string workingDirectory, string? input, bool useDialogSettings, string? process = null)

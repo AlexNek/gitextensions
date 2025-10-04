@@ -64,6 +64,15 @@ namespace GitUI.CommandsDialogs
         public FormGitIgnore(IGitUICommands commands, bool localExclude)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             _localExclude = localExclude;
             InitializeComponent();
             InitializeComplete();

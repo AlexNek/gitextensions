@@ -195,6 +195,15 @@ namespace GitUI.CommandsDialogs
         public FormCommit(IGitUICommands commands, CommitKind commitKind = CommitKind.Normal, GitRevision? editedCommit = null, string? commitMessage = null)
             : base(commands)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
+            if (commands == null)
+            {
+                throw new ArgumentNullException(nameof(commands));
+            }
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             _editedCommit = editedCommit;

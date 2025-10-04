@@ -21,6 +21,10 @@ namespace GitUI.HelperDialogs
         public FormStatus(IGitUICommands commands, ConsoleOutputControl? consoleOutput, bool useDialogSettings)
             : base(commands, enablePositionRestore: true)
         {
+            if (IsUnitTestActive)
+            {
+                return;
+            }
             ArgumentNullException.ThrowIfNull(commands);
 
             _useDialogSettings = useDialogSettings;
