@@ -1,5 +1,7 @@
-﻿using CommonTestUtils;
+﻿using System.CodeDom.Compiler;
+using CommonTestUtils;
 using FluentAssertions;
+
 using GitCommands;
 using GitExtensions.Extensibility.Git;
 using GitExtensions.UITests;
@@ -183,8 +185,21 @@ namespace GitUITests.GitUICommandsTests
                 }
             }
 
-            RunCommandBasedOnArgument<FormFileHistory>(args.ToArray(),
-                runTest: form => form.FindDescendantOfType<FullBleedTabControl>(_ => true).SelectedTab.Text.Should().Be(expectedTab));
+            RunCommandBasedOnArgument<FormFileHistory>(args.ToArray(), runTest: RunTest);
+            return;
+
+            void RunTest(FormFileHistory form)
+            {
+                FullBleedTabControl control = form.FindDescendantOfType<FullBleedTabControl>(_ => true);
+                TabPage tabPage = control.SelectedTab;
+                if (tabPage is null)
+                {
+                    Assert.Fail($"Expected tabPage:'{expectedTab}' must not be <null>");
+                }
+                string tabPageText = tabPage?.Text;
+
+                tabPageText.Should().Be(expectedTab);
+            }
         }
 
         [Test]
