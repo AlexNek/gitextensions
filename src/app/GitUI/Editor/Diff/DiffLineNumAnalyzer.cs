@@ -20,7 +20,7 @@ public partial class DiffLineNumAnalyzer
         int leftLineNum = DiffLineInfo.NotApplicableLineNum;
         int rightLineNum = DiffLineInfo.NotApplicableLineNum;
         bool isHeaderLineLocated = false;
-        string[] lines = text.Split(Delimiters.LineFeed);
+        string[] lines = text.Replace("\r\n", "\n").Split(Delimiters.LineFeed);
         int textOffset = 0;
         int lastLine = lines.Length - 1;
         for (int i = 0; i <= lastLine; i++)
