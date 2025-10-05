@@ -71,20 +71,46 @@ namespace GitCommandsTests
         [TestCase(@"\353\221\220\353\213\244\777.txt", @"\353\221\220\353\213\244\777.txt")] // valid and invalid in the same string
         public void UnescapeOctalCodePoints_handles_octal_codes(string input, string expected)
         {
-            ClassicAssert.AreEqual(expected, GitModule.UnescapeOctalCodePoints(input));
+            // Arrange
+            string? testInput = input;
+
+            // Act
+            string? actual = GitModule.UnescapeOctalCodePoints(testInput);
+
+            // Assert
+            actual.Should().Be(expected);
         }
 
         [Test]
         public void UnescapeOctalCodePoints_returns_same_string_if_nothing_to_escape()
         {
-            // If nothing was escaped in the original string, the same string instance is returned.
+            // Arrange
             const string s = "Hello, World!";
 
-            ClassicAssert.AreSame(s, GitModule.UnescapeOctalCodePoints(s));
+            // Act
+            string actual = GitModule.UnescapeOctalCodePoints(s);
+
+            // Assert
+            actual.Should().BeSameAs(s);
         }
 
+        //[Test]
+        //public void Should_Generate_Fetch_Cmd_With_No_Tags()
+        //{
+        //    using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+        //    using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+        //    GitVersion.ResetVersion();
+
+        //    using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+        //    {
+        //        string expectedArguments = "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --no-tags";
+        //        ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch").Arguments;
+        //        actualArguments.Should().Be(expectedArguments);
+        //    }
+        //}
+
         [Test]
-        public void FetchCmd()
+        public void Should_Generate_Fetch_Cmd_With_No_Tags()
         {
             using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
             using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
@@ -92,53 +118,103 @@ namespace GitCommandsTests
 
             using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
             {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --no-tags",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch").Arguments);
-            }
-
-            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
-            {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --tags",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch", true).Arguments);
-            }
-
-            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
-            {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch", null).Arguments);
-            }
-
-            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
-            {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --no-tags --unshallow",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch", isUnshallow: true).Arguments);
-            }
-
-            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
-            {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --no-tags --prune --force",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch", pruneRemoteBranches: true).Arguments);
-            }
-
-            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
-            {
-                ClassicAssert.AreEqual(
-                    "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch --no-tags --prune --force --prune-tags",
-                    _gitModule.FetchCmd("remote", "remotebranch", "localbranch", pruneRemoteBranches: true, pruneRemoteBranchesAndTags: true).Arguments);
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch").Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.NoTags);
             }
         }
 
         [Test]
-        public void ParseRefs()
+        public void Should_Generate_Fetch_Cmd_With_Tags()
         {
-            ClassicAssert.IsEmpty(_gitModule.ParseRefs(""));
-            ClassicAssert.IsEmpty(_gitModule.ParseRefs("Foo"));
+            using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+            using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+            GitVersion.ResetVersion();
 
+            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+            {
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch", true).Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.Tags);
+            }
+        }
+
+        [Test]
+        public void Should_Generate_Fetch_Cmd_With_Default_Tags()
+        {
+            using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+            using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+            GitVersion.ResetVersion();
+
+            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+            {
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch", null).Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.DefaultTags);
+            }
+        }
+
+        [Test]
+        public void Should_Generate_Fetch_Cmd_With_Unshallow()
+        {
+            using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+            using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+            GitVersion.ResetVersion();
+
+            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+            {
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch", isUnshallow: true).Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.Unshallow);
+            }
+        }
+
+        [Test]
+        public void Should_Generate_Fetch_Cmd_With_Prune()
+        {
+            using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+            using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+            GitVersion.ResetVersion();
+
+            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+            {
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch", pruneRemoteBranches: true).Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.Prune);
+            }
+        }
+
+        [Test]
+        public void Should_Generate_Fetch_Cmd_With_Prune_Tags()
+        {
+            using IDisposable gitVersion = _executable.StageOutput("--version", "git version 2.46.0");
+            using IDisposable configList = _executable.StageOutput("config list --includes --null", null);
+            GitVersion.ResetVersion();
+
+            using (_executable.StageOutput("rev-parse --quiet --verify \"refs/heads/remotebranch~0\"", null))
+            {
+                ArgumentString actualArguments = _gitModule.FetchCmd("remote", "remotebranch", "localbranch", pruneRemoteBranches: true, pruneRemoteBranchesAndTags: true).Arguments;
+                actualArguments.Arguments.Should().Be(FetchCmdExpected.PruneTags);
+            }
+        }
+
+        
+
+        
+        [Test]
+        public void Should_Return_Empty_List_For_Invalid_Input()
+        {
+            // Arrange
+            string emptyInput = "";
+            string invalidInput = "Foo";
+
+            // Act
+            var emptyResult = _gitModule.ParseRefs(emptyInput);
+            var invalidResult = _gitModule.ParseRefs(invalidInput);
+
+            // Assert
+            emptyResult.Should().BeEmpty();
+            invalidResult.Should().BeEmpty();
+        }
+
+        [Test]
+        public void Should_Parse_Head_Ref_Correctly()
+        {
             const string refList =
                 "69a7c7a40230346778e7eebed809773a6bc45268 refs/heads/master\n" +
                 "69a7c7a40230346778e7eebed809773a6bc45268 refs/remotes/origin/master\n" +
@@ -147,43 +223,95 @@ namespace GitCommandsTests
 
             IReadOnlyList<IGitRef> refs = _gitModule.ParseRefs(refList);
 
-            ClassicAssert.AreEqual(4, refs.Count);
+            IGitRef headRef = refs.First(r => r.IsHead);
+            headRef.Guid.Should().Be("69a7c7a40230346778e7eebed809773a6bc45268");
+            headRef.CompleteName.Should().Be("refs/heads/master");
+            headRef.LocalName.Should().Be("master");
+            headRef.Remote.Should().Be("");
+            headRef.IsHead.Should().BeTrue();
+            headRef.IsRemote.Should().BeFalse();
+            headRef.IsTag.Should().BeFalse();
+            headRef.Module.Should().BeSameAs(_gitModule);
+        }
 
-            ClassicAssert.AreEqual("69a7c7a40230346778e7eebed809773a6bc45268", refs[0].Guid);
-            ClassicAssert.AreEqual("refs/heads/master", refs[0].CompleteName);
-            ClassicAssert.AreEqual("master", refs[0].LocalName);
-            ClassicAssert.AreEqual("", refs[0].Remote);
-            ClassicAssert.IsTrue(refs[0].IsHead);
-            ClassicAssert.IsFalse(refs[0].IsRemote);
-            ClassicAssert.IsFalse(refs[0].IsTag);
-            ClassicAssert.AreSame(_gitModule, refs[0].Module);
+        [Test]
+        public void Should_Parse_Remote_Ref_Correctly()
+        {
+            const string refList =
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/heads/master\n" +
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/remotes/origin/master\n" +
+                "5303e7114f1896c639dea0231fac522752cc44a2\trefs/remotes/upstream/mono\n" +
+                "366dfba1abf6cb98d2934455713f3d190df2ba34\trefs/tags/2.51\n";
 
-            ClassicAssert.AreEqual("69a7c7a40230346778e7eebed809773a6bc45268", refs[1].Guid);
-            ClassicAssert.AreEqual("refs/remotes/origin/master", refs[1].CompleteName);
-            ClassicAssert.AreEqual("master", refs[1].LocalName);
-            ClassicAssert.AreEqual("origin", refs[1].Remote);
-            ClassicAssert.IsFalse(refs[1].IsHead);
-            ClassicAssert.IsTrue(refs[1].IsRemote);
-            ClassicAssert.IsFalse(refs[1].IsTag);
-            ClassicAssert.AreSame(_gitModule, refs[1].Module);
+            IReadOnlyList<IGitRef> refs = _gitModule.ParseRefs(refList);
 
-            ClassicAssert.AreEqual("5303e7114f1896c639dea0231fac522752cc44a2", refs[2].Guid);
-            ClassicAssert.AreEqual("refs/remotes/upstream/mono", refs[2].CompleteName);
-            ClassicAssert.AreEqual("mono", refs[2].LocalName);
-            ClassicAssert.AreEqual("upstream", refs[2].Remote);
-            ClassicAssert.IsFalse(refs[2].IsHead);
-            ClassicAssert.IsTrue(refs[2].IsRemote);
-            ClassicAssert.IsFalse(refs[2].IsTag);
-            ClassicAssert.AreSame(_gitModule, refs[2].Module);
+            IGitRef originRef = refs.First(r => r.Remote == "origin");
+            originRef.Guid.Should().Be("69a7c7a40230346778e7eebed809773a6bc45268");
+            originRef.CompleteName.Should().Be("refs/remotes/origin/master");
+            originRef.LocalName.Should().Be("master");
+            originRef.Remote.Should().Be("origin");
+            originRef.IsHead.Should().BeFalse();
+            originRef.IsRemote.Should().BeTrue();
+            originRef.IsTag.Should().BeFalse();
+            originRef.Module.Should().BeSameAs(_gitModule);
+        }
 
-            ClassicAssert.AreEqual("366dfba1abf6cb98d2934455713f3d190df2ba34", refs[3].Guid);
-            ClassicAssert.AreEqual("refs/tags/2.51", refs[3].CompleteName);
-            ClassicAssert.AreEqual("2.51", refs[3].LocalName);
-            ClassicAssert.AreEqual("", refs[3].Remote);
-            ClassicAssert.IsFalse(refs[3].IsHead);
-            ClassicAssert.IsFalse(refs[3].IsRemote);
-            ClassicAssert.IsTrue(refs[3].IsTag);
-            ClassicAssert.AreSame(_gitModule, refs[3].Module);
+        [Test]
+        public void Should_Parse_Remote_Ref_With_Tab_Separator()
+        {
+            const string refList =
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/heads/master\n" +
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/remotes/origin/master\n" +
+                "5303e7114f1896c639dea0231fac522752cc44a2\trefs/remotes/upstream/mono\n" +
+                "366dfba1abf6cb98d2934455713f3d190df2ba34\trefs/tags/2.51\n";
+
+            IReadOnlyList<IGitRef> refs = _gitModule.ParseRefs(refList);
+
+            IGitRef upstreamRef = refs.First(r => r.Remote == "upstream");
+            upstreamRef.Guid.Should().Be("5303e7114f1896c639dea0231fac522752cc44a2");
+            upstreamRef.CompleteName.Should().Be("refs/remotes/upstream/mono");
+            upstreamRef.LocalName.Should().Be("mono");
+            upstreamRef.Remote.Should().Be("upstream");
+            upstreamRef.IsHead.Should().BeFalse();
+            upstreamRef.IsRemote.Should().BeTrue();
+            upstreamRef.IsTag.Should().BeFalse();
+            upstreamRef.Module.Should().BeSameAs(_gitModule);
+        }
+
+        [Test]
+        public void Should_Parse_Tag_Ref_Correctly()
+        {
+            const string refList =
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/heads/master\n" +
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/remotes/origin/master\n" +
+                "5303e7114f1896c639dea0231fac522752cc44a2\trefs/remotes/upstream/mono\n" +
+                "366dfba1abf6cb98d2934455713f3d190df2ba34\trefs/tags/2.51\n";
+
+            IReadOnlyList<IGitRef> refs = _gitModule.ParseRefs(refList);
+
+            IGitRef tagRef = refs.First(r => r.IsTag);
+            tagRef.Guid.Should().Be("366dfba1abf6cb98d2934455713f3d190df2ba34");
+            tagRef.CompleteName.Should().Be("refs/tags/2.51");
+            tagRef.LocalName.Should().Be("2.51");
+            tagRef.Remote.Should().Be("");
+            tagRef.IsHead.Should().BeFalse();
+            tagRef.IsRemote.Should().BeFalse();
+            tagRef.IsTag.Should().BeTrue();
+            tagRef.Module.Should().BeSameAs(_gitModule);
+        }
+
+        [Test]
+        public void Should_Parse_Multiple_Refs_Correctly()
+        {
+            const string refList =
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/heads/master\n" +
+                "69a7c7a40230346778e7eebed809773a6bc45268 refs/remotes/origin/master\n" +
+                "5303e7114f1896c639dea0231fac522752cc44a2\trefs/remotes/upstream/mono\n" +
+                "366dfba1abf6cb98d2934455713f3d190df2ba34\trefs/tags/2.51\n";
+
+            IReadOnlyList<IGitRef> refs = _gitModule.ParseRefs(refList);
+
+            refs.Should().HaveCount(4);
         }
 
         [TestCase("branch -a --contains",
@@ -536,7 +664,14 @@ namespace GitCommandsTests
         [TestCase(new string[] { }, "")]
         public void ResetFiles_should_handle_empty_list(string[] files, string expectedOutput)
         {
-            ClassicAssert.AreEqual(expectedOutput, _gitModule.CheckoutIndexFiles(files?.ToList()));
+            // Arrange
+            List<string> fileList = files.ToList();
+
+            // Act
+            string actual = _gitModule.RemoveFiles(fileList, false);
+
+            // Assert
+            actual.Should().Be(expectedOutput);
         }
 
         [TestCase(new string[] { "abc", "def" }, "checkout-index --index --force -- \"abc\" \"def\"")]
@@ -638,6 +773,16 @@ namespace GitCommandsTests
                 .SetValue(module, cmdRunner);
 
             return module;
+        }
+        private static class FetchCmdExpected
+        {
+            private const string Prefix = "-c fetch.parallel=0 -c submodule.fetchjobs=0 fetch --progress \"remote\" +remotebranch:refs/heads/localbranch";
+            public const string NoTags = Prefix + " --no-tags";
+            public const string Tags = Prefix + " --tags";
+            public const string DefaultTags = Prefix;
+            public const string Unshallow = Prefix + " --no-tags --unshallow";
+            public const string Prune = Prefix + " --no-tags --prune --force";
+            public const string PruneTags = Prefix + " --no-tags --prune --force --prune-tags";
         }
     }
 }

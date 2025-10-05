@@ -5,6 +5,7 @@ using GitCommands;
 using GitExtensions.Extensibility.Git;
 using GitUI;
 using GitUI.CommandsDialogs;
+using GitUI.UserControls;
 
 namespace GitExtensions.UITests.CommandsDialogs
 {
@@ -59,21 +60,15 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         [Test]
-        public void Filters_should_behave_as_expected()
+        public void Should_Show_All_Branches_By_Default()
         {
             _referenceRepository.CreateCommit("Commit1", "Commit1");
             _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
             _referenceRepository.CreateCommit("Commit2", "Commit2");
             _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
-
             _referenceRepository.CreateCommit("head commit");
-
             _referenceRepository.CheckoutBranch("Branch1");
 
-            bool reflogEnabled = AppSettings.ShowReflogReferences;
-            bool branchFilterEnabled = AppSettings.BranchFilterEnabled;
-            bool showCurrentBranchOnly = AppSettings.ShowCurrentBranchOnly;
-            bool revisionGraphShowArtificialCommits = AppSettings.RevisionGraphShowArtificialCommits;
             AppSettings.ShowReflogReferences.Value = false;
             AppSettings.BranchFilterEnabled.Value = false;
             AppSettings.ShowCurrentBranchOnly.Value = false;
@@ -82,74 +77,188 @@ namespace GitExtensions.UITests.CommandsDialogs
             RunFormTest(
                 form =>
                 {
-                    try
-                    {
-                        // 1. Cycle between "Show all branches" > "Show current branch" > "Show filterd branches"
-                        // ------------------------------------------------------------------------------------------------
+                    WaitForRevisionsToBeLoaded(form);
+                    RevisionGridControl.TestAccessor accessor = form.GetTestAccessor().RevisionGrid.GetTestAccessor();
 
-                        Console.WriteLine("Scenario 1: set 'Show all branches'");
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(4);
-                        AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
+                    // Assert
+                    accessor.VisibleRevisionCount.Should().Be(4);
+                    AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
+                });
+        }
 
-                        Console.WriteLine("Scenario 1: set 'Show current branch'");
-                        form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesCurrent.PerformClick();
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
-                        form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(2);
+        [Test]
+        public void Should_Switch_To_Current_Branch_Only()
+        {
+            _referenceRepository.CreateCommit("Commit1", "Commit1");
+            _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("Commit2", "Commit2");
+            _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("head commit");
+            _referenceRepository.CheckoutBranch("Branch1");
 
-                        Console.WriteLine("Scenario 1: set 'Show filtered branches'");
-                        form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesFiltered.PerformClick();
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        AppSettings.BranchFilterEnabled.Value.Should().BeTrue();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
-                        form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(4);
+            AppSettings.ShowReflogReferences.Value = false;
+            AppSettings.BranchFilterEnabled.Value = false;
+            AppSettings.ShowCurrentBranchOnly.Value = false;
+            AppSettings.RevisionGraphShowArtificialCommits = false;
 
-                        // 2. Apply a branch filter
-                        // ------------------------------------------------------------------------------------------------
+            RunFormTest(
+                form =>
+                {
+                    // Act
+                    form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesCurrent.PerformClick();
+                    WaitForRevisionsToBeLoaded(form);
 
-                        Console.WriteLine("Scenario 2: apply branch filter 'Branch2'");
-                        form.GetTestAccessor().ToolStripFilters.SetBranchFilter("Branch2");
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        AppSettings.BranchFilterEnabled.Value.Should().BeTrue();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
-                        form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(3);
+                    // Assert
+                    AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
+                    form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(2);
+                });
+        }
 
-                        Console.WriteLine("Scenario 2: set 'Show current branch'");
-                        form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesCurrent.PerformClick();
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
-                        form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(2);
-                        // The filter text is still present
-                        form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tscboBranchFilter.Text.Should().Be("Branch2");
+        [Test]
+        public void Should_Switch_To_Filtered_Branches()
+        {
+            _referenceRepository.CreateCommit("Commit1", "Commit1");
+            _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("Commit2", "Commit2");
+            _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("head commit");
+            _referenceRepository.CheckoutBranch("Branch1");
 
-                        // 3. Switch to another repo - "Show current branch" must remain, filter text must be erased
-                        // ------------------------------------------------------------------------------------------------
+            AppSettings.ShowReflogReferences.Value = false;
+            AppSettings.BranchFilterEnabled.Value = false;
+            AppSettings.ShowCurrentBranchOnly.Value = true;
+            AppSettings.RevisionGraphShowArtificialCommits = false;
 
-                        Console.WriteLine("Scenario 3: switch repo");
-                        using ReferenceRepository repository = new();
-                        form.SetWorkingDir(repository.Module.WorkingDir);
-                        WaitForRevisionsToBeLoaded(form);
-                        // Assert
-                        AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
-                        AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
-                        form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tscboBranchFilter.Text.Should().BeEmpty();
-                    }
-                    finally
-                    {
-                        AppSettings.ShowReflogReferences.Value = reflogEnabled;
-                        AppSettings.BranchFilterEnabled.Value = branchFilterEnabled;
-                        AppSettings.ShowCurrentBranchOnly.Value = showCurrentBranchOnly;
-                        AppSettings.RevisionGraphShowArtificialCommits = revisionGraphShowArtificialCommits;
-                    }
+            RunFormTest(
+                form =>
+                {
+                    // Act
+                    form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesFiltered.PerformClick();
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Assert
+                    AppSettings.BranchFilterEnabled.Value.Should().BeTrue();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
+                    form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(4);
+                });
+        }
+
+        [Test]
+        public void Should_Apply_Branch_Filter()
+        {
+            _referenceRepository.CreateCommit("Commit1", "Commit1");
+            _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("Commit2", "Commit2");
+            _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("head commit");
+            _referenceRepository.CheckoutBranch("Branch1");
+
+            AppSettings.ShowReflogReferences.Value = false;
+            AppSettings.BranchFilterEnabled.Value = true;
+            AppSettings.ShowCurrentBranchOnly.Value = false;
+            AppSettings.RevisionGraphShowArtificialCommits = false;
+
+            RunFormTest(
+                form =>
+                {
+                    // Act
+                    form.GetTestAccessor().ToolStripFilters.SetBranchFilter("Branch2");
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Assert
+                    AppSettings.BranchFilterEnabled.Value.Should().BeTrue();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeFalse();
+                    form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(3);
+                });
+        }
+
+        [Test]
+        public void Should_Switch_To_Current_Branch_When_Filter_Applied()
+        {
+            _referenceRepository.CreateCommit("Commit1", "Commit1");
+            _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("Commit2", "Commit2");
+            _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("head commit");
+            _referenceRepository.CheckoutBranch("Branch1");
+
+            AppSettings.ShowReflogReferences.Value = false;
+            AppSettings.BranchFilterEnabled.Value = true;
+            AppSettings.ShowCurrentBranchOnly.Value = false;
+            AppSettings.RevisionGraphShowArtificialCommits = false;
+
+            RunFormTest(
+                form =>
+                {
+                    // Arrange
+                    form.GetTestAccessor().ToolStripFilters.SetBranchFilter("Branch2");
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Act
+                    form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tsmiShowBranchesCurrent.PerformClick();
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Assert
+                    AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
+                    form.GetTestAccessor().RevisionGrid.GetTestAccessor().VisibleRevisionCount.Should().Be(2);
+                    // The filter text is still present
+                    form.GetTestAccessor().ToolStripFilters.GetTestAccessor().tscboBranchFilter.Text.Should().Be("Branch2");
+                });
+        }
+
+        [Test]
+        public void Should_Clear_Filter_Text_When_Switching_Repos()
+        {
+            _referenceRepository.CreateCommit("Commit1", "Commit1");
+            _referenceRepository.CreateBranch("Branch1", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("Commit2", "Commit2");
+            _referenceRepository.CreateBranch("Branch2", _referenceRepository.CommitHash);
+            _referenceRepository.CreateCommit("head commit");
+            _referenceRepository.CheckoutBranch("Branch1");
+
+            AppSettings.ShowReflogReferences.Value = false;
+            AppSettings.ShowReflogReferences.Save();
+            AppSettings.BranchFilterEnabled.Value = false;
+            AppSettings.BranchFilterEnabled.Save();
+
+            // trick: set load flag to true, otherwise setting ShowCurrentBranchOnly has no effect
+            // after set we need to store current value as test changed it to false
+            AppSettings.ShowCurrentBranchOnly.Reload();
+            AppSettings.ShowCurrentBranchOnly.Value = true;
+            AppSettings.ShowCurrentBranchOnly.Save();
+            AppSettings.RevisionGraphShowArtificialCommits = false; 
+            /* not possible to set true
+             *public void SetBranchFilter(string filter)
+               {
+                   // Set filtered branches if there is a filter, handled as all branches otherwise
+                   ShowCurrentBranchOnly = false;
+               
+                   string newFilter = filter?.Trim() ?? string.Empty;
+                   ByBranchFilter = !string.IsNullOrWhiteSpace(newFilter);
+                   BranchFilter = newFilter;
+               }
+             */
+            RunFormTest(
+                form =>
+                {
+                    // Arrange
+                    form.GetTestAccessor().ToolStripFilters.SetBranchFilter("Branch2");
+
+                    // Act
+                    using ReferenceRepository repository = new();
+                    form.SetWorkingDir(repository.Module.WorkingDir);
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Assert
+                    AppSettings.BranchFilterEnabled.Value.Should().BeFalse();
+                    // trick: restore initial stored settings, value is changed in test
+                    AppSettings.ShowCurrentBranchOnly.Reload();
+                    AppSettings.ShowCurrentBranchOnly.Value.Should().BeTrue();
+                    FilterToolBar.TestAccessor testAccessor = form.GetTestAccessor().ToolStripFilters.GetTestAccessor();
+                    testAccessor.tscboBranchFilter.Text.Should().BeEmpty();
                 });
         }
 
@@ -192,7 +301,112 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         [Test]
-        public void FileSelection_should_be_restored_after_refresh()
+        public void Should_Select_File_In_File_List()
+        {
+            // create a commit with multiple files changed
+            const string fileA = "fileA.txt";
+            const string fileB = "fileB.txt";
+            const string contentA = nameof(contentA);
+            const string contentB = nameof(contentB);
+
+            using ReferenceRepository referenceRepository = new();
+            GitUICommands commands = new(GlobalServiceContainer.CreateDefaultMockServiceContainer(), referenceRepository.Module);
+            referenceRepository.CreateCommit("multiple files",
+                $"{contentA}\n{new string('A', 20000)}", fileA,
+                $"{contentB}\n{new string('B', 20000)}", fileB);
+
+            const int maxMilliseconds = 1_000;
+            RunFormTest(
+                async form =>
+                {
+                    FormBrowse.TestAccessor ta = form.GetTestAccessor();
+                    ((TabControl)ta.DiffTabPage.Parent).SelectedTab = ta.DiffTabPage;
+
+                    RevisionDiffControl.TestAccessor tadiff = ta.RevisionDiffControl.GetTestAccessor();
+                    FileStatusList fileStatusList = tadiff.DiffFiles;
+
+                    WaitForRevisionsToBeLoaded(form);
+
+                    IReadOnlyList<GitItemStatus> files = [];
+                    UITest.ProcessUntil("waiting for files", () => { return (files = fileStatusList.GitItemStatuses).Count == 2; }, maxMilliseconds);
+                    GitItemStatus fileToSelect = files[1];
+
+                    // Act
+                    fileStatusList.SelectedGitItems = [fileToSelect];
+
+                    // Assert
+                    await VerifySelectionAsync();
+
+                    async Task VerifySelectionAsync(int expectedLine = 1)
+                    {
+                        await Task.Delay(FileStatusList.SelectedIndexChangeThrottleDuration);
+                        UITest.ProcessUntil("waiting for selection",
+                            () => fileStatusList.SelectedGitItem?.Name == fileB
+                                    && tadiff.DiffText.GetText().StartsWith(contentB)
+                                    && tadiff.DiffText.CurrentFileLine == expectedLine,
+                            maxMilliseconds);
+                    }
+                },
+                commands);
+        }
+
+        [Test]
+        public void Should_Navigate_To_Specific_Line_In_File()
+        {
+            // create a commit with multiple files changed
+            const string fileA = "fileA.txt";
+            const string fileB = "fileB.txt";
+            const string contentA = nameof(contentA);
+            const string contentB = nameof(contentB);
+
+            using ReferenceRepository referenceRepository = new();
+            GitUICommands commands = new(GlobalServiceContainer.CreateDefaultMockServiceContainer(), referenceRepository.Module);
+            referenceRepository.CreateCommit("multiple files",
+                $"{contentA}\n{new string('A', 20000)}", fileA,
+                $"{contentB}\n{new string('B', 20000)}", fileB);
+
+            const int maxMilliseconds = 1_000;
+            RunFormTest(
+                async form =>
+                {
+                    FormBrowse.TestAccessor ta = form.GetTestAccessor();
+                    ((TabControl)ta.DiffTabPage.Parent).SelectedTab = ta.DiffTabPage;
+
+                    RevisionDiffControl.TestAccessor tadiff = ta.RevisionDiffControl.GetTestAccessor();
+                    FileStatusList fileStatusList = tadiff.DiffFiles;
+
+                    WaitForRevisionsToBeLoaded(form);
+
+                    IReadOnlyList<GitItemStatus> files = [];
+                    UITest.ProcessUntil("waiting for files", () => { return (files = fileStatusList.GitItemStatuses).Count == 2; }, maxMilliseconds);
+                    GitItemStatus fileToSelect = files[1];
+                    fileStatusList.SelectedGitItems = [fileToSelect];
+                    await VerifySelectionAsync();
+
+                    // Act
+                    const int expectedLine = 2;
+                    tadiff.DiffText.GoToLine(expectedLine);
+
+                    // Assert
+                    UITest.ProcessUntil("waiting for line navigation",
+                        () => tadiff.DiffText.CurrentFileLine == expectedLine,
+                        maxMilliseconds);
+
+                    async Task VerifySelectionAsync(int expectedLine = 1)
+                    {
+                        await Task.Delay(FileStatusList.SelectedIndexChangeThrottleDuration);
+                        UITest.ProcessUntil("waiting for selection",
+                            () => fileStatusList.SelectedGitItem?.Name == fileB
+                                    && tadiff.DiffText.GetText().StartsWith(contentB)
+                                    && tadiff.DiffText.CurrentFileLine == expectedLine,
+                            maxMilliseconds);
+                    }
+                },
+                commands);
+        }
+
+        [Test]
+        public void Should_Maintain_File_Selection_After_Single_Refresh()
         {
             // create a commit with multiple files changed
             const string fileA = "fileA.txt";
@@ -226,15 +440,68 @@ namespace GitExtensions.UITests.CommandsDialogs
                     const int expectedLine = 2;
                     tadiff.DiffText.GoToLine(expectedLine);
 
-                    // repeat: refresh and check selection
-                    for (int i = 0; i < 15; ++i)
+                    // Act
+                    ta.RefreshRevisions();
+                    WaitForRevisionsToBeLoaded(form);
+
+                    // Assert
+                    await VerifySelectionAsync(expectedLine);
+
+                    async Task VerifySelectionAsync(int expectedLine = 1)
+                    {
+                        await Task.Delay(FileStatusList.SelectedIndexChangeThrottleDuration);
+                        UITest.ProcessUntil("waiting for selection",
+                            () => fileStatusList.SelectedGitItem?.Name == fileB
+                                    && tadiff.DiffText.GetText().StartsWith(contentB)
+                                    && tadiff.DiffText.CurrentFileLine == expectedLine,
+                            maxMilliseconds);
+                    }
+                },
+                commands);
+        }
+
+        [Test]
+        public void Should_Maintain_File_Selection_After_Multiple_Refreshes()
+        {
+            // create a commit with multiple files changed
+            const string fileA = "fileA.txt";
+            const string fileB = "fileB.txt";
+            const string contentA = nameof(contentA);
+            const string contentB = nameof(contentB);
+
+            using ReferenceRepository referenceRepository = new();
+            GitUICommands commands = new(GlobalServiceContainer.CreateDefaultMockServiceContainer(), referenceRepository.Module);
+            referenceRepository.CreateCommit("multiple files",
+                $"{contentA}\n{new string('A', 20000)}", fileA,
+                $"{contentB}\n{new string('B', 20000)}", fileB);
+
+            const int maxMilliseconds = 1_000;
+            RunFormTest(
+                async form =>
+                {
+                    FormBrowse.TestAccessor ta = form.GetTestAccessor();
+                    ((TabControl)ta.DiffTabPage.Parent).SelectedTab = ta.DiffTabPage;
+
+                    RevisionDiffControl.TestAccessor tadiff = ta.RevisionDiffControl.GetTestAccessor();
+                    FileStatusList fileStatusList = tadiff.DiffFiles;
+
+                    WaitForRevisionsToBeLoaded(form);
+
+                    IReadOnlyList<GitItemStatus> files = [];
+                    UITest.ProcessUntil("waiting for files", () => { return (files = fileStatusList.GitItemStatuses).Count == 2; }, maxMilliseconds);
+                    GitItemStatus fileToSelect = files[1];
+                    fileStatusList.SelectedGitItems = [fileToSelect];
+                    await VerifySelectionAsync();
+                    const int expectedLine = 2;
+                    tadiff.DiffText.GoToLine(expectedLine);
+
+                    // Act & Assert: refresh multiple times and check selection is maintained
+                    for (int i = 0; i < 5; ++i)
                     {
                         ta.RefreshRevisions();
                         WaitForRevisionsToBeLoaded(form);
                         await VerifySelectionAsync(expectedLine);
                     }
-
-                    return;
 
                     async Task VerifySelectionAsync(int expectedLine = 1)
                     {
