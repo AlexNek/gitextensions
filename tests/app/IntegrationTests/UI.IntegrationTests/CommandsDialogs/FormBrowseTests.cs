@@ -52,6 +52,12 @@ namespace GitExtensions.UITests.CommandsDialogs
             _commands = new GitUICommands(GlobalServiceContainer.CreateDefaultMockServiceContainer(), _referenceRepository.Module);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            _commands = null;
+        }
+
         [Test]
         public void Filters_should_behave_as_expected()
         {
