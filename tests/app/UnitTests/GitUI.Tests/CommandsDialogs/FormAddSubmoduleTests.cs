@@ -7,6 +7,8 @@ using GitUI.CommandsDialogs.SubmodulesDialog;
 
 namespace GitUITests.CommandsDialogs
 {
+    [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class FormAddSubmoduleTests
     {
         private const string DummyUrl = "URL";

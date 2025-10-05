@@ -11,6 +11,7 @@ namespace GitUITests.UserControls
     [SetUICulture("en-US")]
     [TestFixture]
     [NonParallelizable]
+    [Apartment(ApartmentState.STA)]
     public class FilterInfoTests
     {
         [SetUp]

@@ -2,6 +2,7 @@ using GitUI.UserControls;
 
 namespace GitUITests.UserControls
 {
+    [TestFixture]
     [Apartment(ApartmentState.STA)]
     public class InteractiveGitActionControlTests
     {

@@ -5,6 +5,8 @@ using GitUIPluginInterfaces;
 
 namespace GitUITests.UserControls;
 
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public sealed class GitBlameParserTest
 {
     // Track the original setting value

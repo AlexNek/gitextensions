@@ -4,6 +4,7 @@ using GitUI.CommandsDialogs;
 namespace GitUITests.CommandsDialogs
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public sealed class FormFileHistoryControllerTests
     {
         private FormFileHistoryController _controller;

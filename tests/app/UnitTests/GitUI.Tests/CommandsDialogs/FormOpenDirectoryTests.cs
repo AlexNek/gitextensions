@@ -7,6 +7,7 @@ using NSubstitute;
 
 namespace GitUITests.CommandsDialogs
 {
+    [TestFixture]
     [Apartment(ApartmentState.STA)]
     public class FormOpenDirectoryTests
     {

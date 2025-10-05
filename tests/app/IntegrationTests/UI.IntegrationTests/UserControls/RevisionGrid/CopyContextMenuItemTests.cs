@@ -8,6 +8,7 @@ using GitUIPluginInterfaces;
 namespace GitExtensions.UITests.UserControls.RevisionGrid
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class CopyContextMenuItemTests
     {
         private string _originalTranslation;

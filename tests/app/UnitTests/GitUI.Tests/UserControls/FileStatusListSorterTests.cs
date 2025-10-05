@@ -7,6 +7,8 @@ using GitUIPluginInterfaces;
 
 namespace GitUITests.UserControls;
 
+[TestFixture]
+[Apartment(ApartmentState.STA)]
 public class FileStatusListSorterTests
 {
     [SetUp]

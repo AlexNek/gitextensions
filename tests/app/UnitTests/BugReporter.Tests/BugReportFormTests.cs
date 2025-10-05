@@ -4,6 +4,7 @@ using FluentAssertions;
 namespace GitUITests
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class BugReportFormTests
     {
         [TestCase("", false)]

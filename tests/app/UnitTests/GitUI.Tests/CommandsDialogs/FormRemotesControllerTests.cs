@@ -5,6 +5,7 @@ using GitUI.CommandsDialogs;
 namespace GitUITests.CommandsDialogs
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public class FormRemotesControllerTests
     {
         private FormRemotesController _controller;

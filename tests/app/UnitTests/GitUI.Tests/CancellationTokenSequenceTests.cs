@@ -3,6 +3,7 @@
 namespace GitUITests
 {
     [TestFixture]
+    [Apartment(ApartmentState.STA)]
     public sealed class CancellationTokenSequenceTests
     {
         [Test]
