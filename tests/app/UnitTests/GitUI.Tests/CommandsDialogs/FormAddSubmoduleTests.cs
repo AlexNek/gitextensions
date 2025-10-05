@@ -24,7 +24,7 @@ namespace GitUITests.CommandsDialogs
         private MockExecutable _gitExecutable;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _gitExecutable = new MockExecutable();
         }
