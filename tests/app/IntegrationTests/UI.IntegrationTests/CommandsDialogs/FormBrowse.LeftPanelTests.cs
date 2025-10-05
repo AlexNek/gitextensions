@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
 using GitUI;
@@ -51,7 +51,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ReferenceRepository.ResetRepo(ref _remoteReferenceRepository);
 

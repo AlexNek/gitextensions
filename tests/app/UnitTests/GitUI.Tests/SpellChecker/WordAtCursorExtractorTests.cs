@@ -1,4 +1,4 @@
-﻿using GitUI.SpellChecker;
+using GitUI.SpellChecker;
 
 namespace GitUITests.SpellChecker
 {
@@ -8,7 +8,7 @@ namespace GitUITests.SpellChecker
         private WordAtCursorExtractor _wordAtCursorExtractor;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _wordAtCursorExtractor = new WordAtCursorExtractor();
         }

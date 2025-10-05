@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Design;
+using System.ComponentModel.Design;
 using CommonTestUtils;
 using FluentAssertions;
 using GitExtUtils;
@@ -21,7 +21,7 @@ namespace GitUITests.Editor
         private FileViewer _fileViewer;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ServiceContainer serviceContainer = new();
             IScriptsManager scriptsManager = Substitute.For<IScriptsManager>();

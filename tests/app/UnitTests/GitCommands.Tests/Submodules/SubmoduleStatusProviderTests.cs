@@ -37,7 +37,7 @@ namespace GitCommandsTests.Submodules
         /// OneTimeTearDown can be used though
         /// </summary>
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             if (_isInit)
             {

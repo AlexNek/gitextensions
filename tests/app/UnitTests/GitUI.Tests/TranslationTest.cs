@@ -1,4 +1,4 @@
-﻿using GitExtensions.Extensibility.Translations;
+using GitExtensions.Extensibility.Translations;
 using GitExtensions.Extensibility.Translations.Xliff;
 using GitUI;
 
@@ -8,7 +8,7 @@ namespace GitUITests
     public sealed class TranslationTest
     {
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             GitModuleForm.IsUnitTestActive = true;
         }

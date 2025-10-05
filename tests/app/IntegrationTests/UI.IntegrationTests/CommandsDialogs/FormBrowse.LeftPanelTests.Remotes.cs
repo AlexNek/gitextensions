@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
 using GitCommands.Remotes;
@@ -45,7 +45,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             // we will be modifying .git/config and need to completely reset each time
             _referenceRepository = new ReferenceRepository();

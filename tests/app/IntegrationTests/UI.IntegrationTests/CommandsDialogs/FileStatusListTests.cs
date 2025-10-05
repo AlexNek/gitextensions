@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Design;
+using System.ComponentModel.Design;
 using FluentAssertions;
 using GitExtensions.Extensibility.Git;
 using GitUI;
@@ -16,7 +16,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         private FileStatusList _fileStatusList;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ServiceContainer serviceContainer = GlobalServiceContainer.CreateDefaultMockServiceContainer();
             IGitModule module = Substitute.For<IGitModule>();

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.ComponentModel.Design;
 using CommonTestUtils;
 using FluentAssertions;
@@ -30,7 +30,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         private GitUICommands _commands;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ReferenceRepository.ResetRepo(ref _referenceRepository);
 

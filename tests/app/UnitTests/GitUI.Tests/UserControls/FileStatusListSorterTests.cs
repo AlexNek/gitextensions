@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Nodes;
+using System.Text.Json.Nodes;
 using FluentAssertions;
 using GitExtensions.Extensibility.Git;
 using GitUI;
@@ -10,7 +10,7 @@ namespace GitUITests.UserControls;
 public class FileStatusListSorterTests
 {
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
     }
 

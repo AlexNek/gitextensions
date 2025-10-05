@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
@@ -32,7 +32,7 @@ namespace GitExtensions.UITests.UserControls.RevisionGrid
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _referenceRepository = new ReferenceRepository();
             _initialCommit = _referenceRepository.CommitHash;

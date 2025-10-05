@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Design;
+using System.ComponentModel.Design;
 using CommonTestUtils;
 using GitCommands;
 using GitExtensions.Extensibility.Git;
@@ -17,7 +17,7 @@ public class RevisionFileNameTests
     private IGitCommandRunner _commandRunner;
 
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
         _revisionGridControl = new RevisionGridControl();
         _executable = new MockExecutable();

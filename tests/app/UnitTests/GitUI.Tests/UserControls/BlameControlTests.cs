@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using CommonTestUtils;
 using FluentAssertions;
@@ -26,7 +26,7 @@ namespace GitUITests.UserControls
         private const string _fileName2 = "B.txt";
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             GitBlameCommit blameCommit1 = new(
                 ObjectId.Random(),

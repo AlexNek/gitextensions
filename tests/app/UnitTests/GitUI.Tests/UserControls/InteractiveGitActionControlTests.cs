@@ -1,4 +1,4 @@
-﻿using GitUI.UserControls;
+using GitUI.UserControls;
 
 namespace GitUITests.UserControls
 {
@@ -8,7 +8,7 @@ namespace GitUITests.UserControls
         private InteractiveGitActionControl.TestAccessor _accessor;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _accessor = new InteractiveGitActionControl().GetTestAccessor();
         }

@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using CommonTestUtils;
 using GitCommands;
 using GitUI;
@@ -12,7 +12,7 @@ namespace GitCommandsTests
         private AsyncLoader _loader;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _loader = new AsyncLoader();
         }

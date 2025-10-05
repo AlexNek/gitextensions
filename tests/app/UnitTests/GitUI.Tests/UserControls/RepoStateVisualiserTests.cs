@@ -1,4 +1,4 @@
-﻿using GitExtensions.Extensibility.Git;
+using GitExtensions.Extensibility.Git;
 using GitUI.UserControls;
 
 namespace GitUITests.UserControls
@@ -7,7 +7,7 @@ namespace GitUITests.UserControls
     public sealed class RepoStateVisualiserTests
     {
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _repoStateVisualiser = new RepoStateVisualiser();
         }

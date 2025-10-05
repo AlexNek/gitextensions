@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using CommonTestUtils;
@@ -17,7 +17,7 @@ namespace GitCommandsTests.Git
         private string _appPath;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _executable = new MockExecutable();
 

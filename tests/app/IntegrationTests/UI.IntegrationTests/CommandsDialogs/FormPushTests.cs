@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands.Git;
 using GitUI;
@@ -16,7 +16,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         private GitUICommands _commands;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ReferenceRepository.ResetRepo(ref _referenceRepository);
             _commands = new GitUICommands(GlobalServiceContainer.CreateDefaultMockServiceContainer(), _referenceRepository.Module);

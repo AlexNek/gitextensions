@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GitCommands;
 using GitUI.Hotkey;
 using GitUI.ScriptsEngine;
@@ -13,7 +13,7 @@ namespace GitUITests.Hotkey
         private HotkeySettingsManager _settingsManager;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             IScriptsManager scriptsManager = Substitute.For<IScriptsManager>();
             scriptsManager.GetScripts().Returns([]);

@@ -8,7 +8,7 @@ namespace GitCommandsTests.Git
         private CommandCache _cache;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _cache = new CommandCache();
         }

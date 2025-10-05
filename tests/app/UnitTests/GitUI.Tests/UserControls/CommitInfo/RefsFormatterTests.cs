@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GitUI.CommitInfo;
 using ResourceManager;
 
@@ -14,7 +14,7 @@ namespace GitUITests.UserControls.CommitInfo
         private RefsFormatter _refsFormatter;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _linkFactory = new LinkFactory();
             _refsFormatter = new RefsFormatter(_linkFactory);

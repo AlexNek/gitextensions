@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using GitCommands;
@@ -30,7 +30,7 @@ public class SplitterPersistenceTests
     }
 
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
         _settings = new();
 

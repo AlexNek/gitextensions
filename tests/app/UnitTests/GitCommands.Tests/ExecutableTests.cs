@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using FluentAssertions;
 using GitCommands;
 using GitCommands.Logging;
@@ -11,7 +11,7 @@ namespace GitCommandsTests
     public sealed class ExecutableTests
     {
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
         }
 

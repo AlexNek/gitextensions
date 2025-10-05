@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
 using GitExtensions.Extensibility.Git;
@@ -12,7 +12,7 @@ namespace GitCommandsTests
         private GitModule _gitModule;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _refRepo = new();
             _gitModule = _refRepo.Module;

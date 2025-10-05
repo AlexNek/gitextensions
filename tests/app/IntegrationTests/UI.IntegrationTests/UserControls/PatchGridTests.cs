@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
 using GitExtensions.Extensibility;
@@ -20,7 +20,7 @@ namespace UITests.UserControls
         private GitUICommands _commands;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ReferenceRepository.ResetRepo(ref _referenceRepository);
 

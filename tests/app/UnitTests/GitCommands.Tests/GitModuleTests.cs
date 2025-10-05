@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using CommonTestUtils;
@@ -23,7 +23,7 @@ namespace GitCommandsTests
         private MockExecutable _executable;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _executable = new MockExecutable();
 

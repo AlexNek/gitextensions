@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GitUI;
 
 namespace GitUITests
@@ -12,7 +12,7 @@ namespace GitUITests
         private IFindFilePredicateProvider _provider;
 
         [SetUp]
-        public void Init()
+        public void Setup()
         {
             _provider = new FindFilePredicateProvider();
         }

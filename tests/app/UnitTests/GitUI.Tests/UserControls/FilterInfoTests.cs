@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using GitCommands;
 using GitExtensions.Extensibility.Git;
@@ -14,7 +14,7 @@ namespace GitUITests.UserControls
     public class FilterInfoTests
     {
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             AppSettings.ShowGitNotes = false;
             AppSettings.HideMergeCommits = false;

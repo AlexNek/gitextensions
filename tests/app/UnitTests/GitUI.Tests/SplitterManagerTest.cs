@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitUI;
 
@@ -12,7 +12,7 @@ public partial class SplitterManagerTest
     private const int _designTimeSplitterDistance = 40;
 
     [SetUp]
-    public void SetupTest()
+    public void Setup()
     {
         _settings = new MemorySettings();
     }

@@ -1,4 +1,4 @@
-﻿using GitExtensions.Extensibility.Git;
+using GitExtensions.Extensibility.Git;
 using GitUI;
 using GitUI.UserControls;
 using GitUIPluginInterfaces;
@@ -31,7 +31,7 @@ namespace GitUITests.Editor
         private TextEditorControl _textEditorControl;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _findAndReplaceForm = new FindAndReplaceForm();
             _textEditorControl = new TextEditorControl();

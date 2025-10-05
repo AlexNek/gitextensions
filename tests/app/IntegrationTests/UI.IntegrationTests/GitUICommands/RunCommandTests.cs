@@ -1,4 +1,4 @@
-﻿using System.CodeDom.Compiler;
+using System.CodeDom.Compiler;
 using CommonTestUtils;
 using FluentAssertions;
 
@@ -21,7 +21,7 @@ namespace GitUITests.GitUICommandsTests
         private GitUICommands _commands;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             bool first = _referenceRepository is null;
             ReferenceRepository.ResetRepo(ref _referenceRepository);

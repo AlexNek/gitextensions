@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
 using GitExtensions.Extensibility.Git;
@@ -20,7 +20,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         private bool _originalAutoStash;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _originalDefaultPullAction = AppSettings.DefaultPullAction;
             _originalFormPullAction = AppSettings.FormPullAction;

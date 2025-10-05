@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
@@ -63,7 +63,7 @@ namespace GitExtensions.UITests.CommandsDialogs
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _repo1 = new GitModuleTestHelper("repo1");
 

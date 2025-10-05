@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GitCommands.Settings;
 using GitUI.Editor;
 
@@ -10,7 +10,7 @@ namespace GitUITests.Editor
         private FileViewer _fileViewer;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _fileViewer = new FileViewer();
         }

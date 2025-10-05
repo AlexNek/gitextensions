@@ -1,4 +1,4 @@
-﻿using CommonTestUtils;
+using CommonTestUtils;
 using CommonTestUtils.MEF;
 using GitCommands;
 using GitExtensions.Extensibility.Settings;
@@ -26,7 +26,7 @@ namespace UITests.CommandsDialogs.SettingsDialog.Pages
         }
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             ReferenceRepository.ResetRepo(ref _referenceRepository);
             ExportProvider mefExportProvider = TestComposition.Empty.ExportProviderFactory.CreateExportProvider();

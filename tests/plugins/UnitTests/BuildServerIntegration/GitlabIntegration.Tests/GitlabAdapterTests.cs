@@ -20,7 +20,7 @@ internal class GitlabAdapterTests
     private IGitlabApiClient _apiClient;
 
     [SetUp]
-    public void SetUp()
+    public void Setup()
     {
         _apiClient = Substitute.For<IGitlabApiClient>();
 

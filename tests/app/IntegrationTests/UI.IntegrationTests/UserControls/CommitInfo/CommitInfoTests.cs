@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.Design;
+using System.ComponentModel.Design;
 using System.Reflection;
 using CommonTestUtils;
 using FluentAssertions;
@@ -25,7 +25,7 @@ namespace GitExtensions.UITests.UserControls.CommitInfo
         private MockLinkFactory _mockLinkFactory;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _mockLinkFactory = new();
             ServiceContainer serviceContainer = GlobalServiceContainer.CreateDefaultMockServiceContainer();

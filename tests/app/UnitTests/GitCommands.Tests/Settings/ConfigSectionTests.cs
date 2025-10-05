@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GitCommands.Config;
 
 namespace GitCommandsTests.Settings
@@ -12,7 +12,7 @@ namespace GitCommandsTests.Settings
         private static ConfigSection _configSection;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _configSection = new ConfigSection(_sectionName, forceCaseSensitive: true);
         }
