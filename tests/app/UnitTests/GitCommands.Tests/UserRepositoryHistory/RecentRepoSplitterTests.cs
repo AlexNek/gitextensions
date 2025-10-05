@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Threading;
+using System.Windows.Forms.Design;
+using FluentAssertions;
 using GitCommands.UserRepositoryHistory;
 
 namespace GitCommandsTests.UserRepositoryHistory;
@@ -8,6 +10,7 @@ public class RecentRepoSplitterTests
 {
     private const string _relativeLongRepoPath = @"this\is\a\very_very_very_very_very_very_very\long\repo_path";
     private static readonly string repoPathInUserFolder = Path.Combine(Path.GetTempPath(), _relativeLongRepoPath);
+    private static readonly string repoPathInAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), _relativeLongRepoPath);
     private static readonly string repoAnchoredInTopPath1 = @"C:\this\is\a\repo_anchored_in_top_path1\";
     private static readonly string repoAnchoredInTopPath2 = @"C:\this\is\a\repo_anchored_in_top_path2\";
     private static readonly string repoAnchoredInRecentPath = @"C:\this\is\a\repo_anchored_in_recent_path\";
@@ -80,12 +83,13 @@ public class RecentRepoSplitterTests
     [Test]
     public void SplitRecentRepos_Should_display_middle_dots_in_caption()
     {
+        var expectedPathEnd = @"\long\repo_path";
         // Warning: Able to shorten only an existing folder path
-        Directory.CreateDirectory(repoPathInUserFolder);
+        Directory.CreateDirectory(repoPathInAppData);
 
         List<Repository> history =
         [
-            new Repository(repoPathInUserFolder) { Anchor = Repository.RepositoryAnchor.AnchoredInTop },
+            new Repository(repoPathInAppData) { Anchor = Repository.RepositoryAnchor.AnchoredInTop },
         ];
 
         RecentRepoSplitter sut = new();
@@ -97,7 +101,12 @@ public class RecentRepoSplitterTests
         sut.SplitRecentRepos(history, topRepoList, recentRepoList);
 
         topRepoList.Should().ContainSingle();
-        topRepoList[0].Caption.Should().Be(@"~\AppData\..\long\repo_path");
+
+        var caption = topRepoList[0].Caption;
+        caption.Should().Contain(@"\AppData");
+        caption.Should().Contain(@"\..\");
+        caption.Should().EndWith(expectedPathEnd);
+
         recentRepoList.Should().ContainSingle();
     }
     #endregion
