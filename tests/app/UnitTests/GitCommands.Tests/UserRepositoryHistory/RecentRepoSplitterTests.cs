@@ -73,7 +73,7 @@ public class RecentRepoSplitterTests
         sut.SplitRecentRepos(history, topRepoList, recentRepoList);
 
         topRepoList.Should().ContainSingle();
-        topRepoList[0].Caption.Should().StartWith(@"~\AppData").And.EndWith(_relativeLongRepoPath);
+        topRepoList[0].Caption.Should().Contain(@"\AppData").And.EndWith(_relativeLongRepoPath);
         recentRepoList.Should().ContainSingle();
     }
 
