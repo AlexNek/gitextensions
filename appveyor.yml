@@ -129,9 +129,11 @@ on_failure:
         Push-AppveyorArtifact "$_"
     }
 - ps: |
-    Get-ChildItem -recurse artifacts\Release\TestsResults\*.trx -ErrorAction SilentlyContinue `
-    | ForEach-Object {
-        Push-AppveyorArtifact "$_"
+    if (Test-Path artifacts\Release\TestsResults\*.trx) {
+        Get-ChildItem -recurse artifacts\Release\TestsResults\*.trx `
+        | ForEach-Object {
+            Push-AppveyorArtifact "$_"
+        }
     }
 - ps: |
    Get-ChildItem -Recurse artifacts\Release\**\*.dgml -ErrorAction SilentlyContinue `
@@ -139,14 +141,16 @@ on_failure:
         Push-AppveyorArtifact "$_"
     }
 - ps: |
-    Get-ChildItem -recurse artifacts\Release\TestsResults\*.trx | `
-        ForEach-Object {
-            $file = $_.FullName.Replace('[', '``[').Replace(']', '``]')
-            #Write-Output "Processing $file"
+    if (Test-Path artifacts\Release\TestsResults\*.trx) {
+        Get-ChildItem -recurse artifacts\Release\TestsResults\*.trx | `
+            ForEach-Object {
+                $file = $_.FullName.Replace('[', '``[').Replace(']', '``]')
+                #Write-Output "Processing $file"
 
-            [xml]$xml = Get-Content -Path $file
-            $xml.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed' | ForEach-Object {
-                $errorMessage = "$($_.Output.ErrorInfo.Message)`r`n$($_.Output.ErrorInfo.StackTrace)`r`n"
-                Write-Host $errorMessage -ForegroundColor Red
+                [xml]$xml = Get-Content -Path $file
+                $xml.TestRun.Results.UnitTestResult | Where-Object outcome -eq 'Failed' | ForEach-Object {
+                    $errorMessage = "$($_.Output.ErrorInfo.Message)`r`n$($_.Output.ErrorInfo.StackTrace)`r`n"
+                    Write-Host $errorMessage -ForegroundColor Red
+                }
             }
-        }
+    }
