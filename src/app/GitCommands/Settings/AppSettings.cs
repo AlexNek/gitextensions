@@ -50,7 +50,6 @@ namespace GitCommands
 
         private static Mutex _globalMutex;
 
-
         [GeneratedRegex(@"^(?<major>\d+)\.(?<minor>\d+)", RegexOptions.ExplicitCapture)]
         private static partial Regex VersionRegex();
 
@@ -456,7 +455,7 @@ namespace GitCommands
             get => GetString("lastCommitMessage", "");
             set => SetString("lastCommitMessage", value);
         }
-        
+
         public static int CommitDialogNumberOfPreviousMessages
         {
             get => GetInt("commitDialogNumberOfPreviousMessages", 6);
