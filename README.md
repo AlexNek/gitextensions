@@ -1,15 +1,26 @@
 ![Git Extensions logo](https://cdn.rawgit.com/gitextensions/gitextensions/master/setup/assets/Logo/git-extensions-logo.svg)
 
-# Git Extensions
+# Git Extensions (AlexNek Fork)
 
-Git Extensions is a standalone UI tool for managing git repositories.
-It also integrates with Windows Explorer and Microsoft Visual Studio (2015/2017/2019).
+This is the AlexNek fork of Git Extensions, a standalone UI tool for managing git repositories. It also integrates with Windows Explorer and Microsoft Visual Studio (2015/2017/2019).
+
+This fork features custom architectural changes and faster development cycles compared to the original project.
 
 Have a question? Come and talk to us: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gitextensions/gitextensions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or send us a tweet [![@git_extensions](https://img.shields.io/badge/twitter-%40git__extensions-blue)](https://twitter.com/git_extensions)
 
 ## Online manual
 
 [git-extensions-documentation.readthedocs.org](https://git-extensions-documentation.readthedocs.org/)
+
+## Fork Information
+
+This repository is a fork of the original [GitExtensions project](https://github.com/gitextensions/gitextensions). The fork includes:
+
+- **Different Architectural Views**: Customized architecture to better suit specific development needs.
+- **Faster Development Cycle**: Pull requests and contributions are reviewed and merged more quickly compared to the main project.
+- **Additional Documentation**: Comprehensive docs in the [docu/](docu/) directory, including architecture details and development guides.
+
+For the original project, visit [github.com/gitextensions/gitextensions](https://github.com/gitextensions/gitextensions).
 
 ## Current Status
 
@@ -181,6 +192,7 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 
 # Useful Links
 
+* Changelog: [CHANGELOG.md](CHANGELOG.md)
 * Website: [gitextensions.github.io](https://gitextensions.github.io/) [Git repo](https://github.com/gitextensions/gitextensions.github.io)
 * Source code: [github.com/gitextensions/gitextensions](https://github.com/gitextensions/gitextensions)
 * Online manual: [git-extensions-documentation.readthedocs.org](https://git-extensions-documentation.readthedocs.org/) [Git repo](https://github.com/gitextensions/GitExtensionsDoc)
