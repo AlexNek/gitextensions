@@ -20,6 +20,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Use latest version of current used .NET version.  6.0 could use the latest of 6.0.  See .\Scripts\Update-DotnetVersion.ps1
   GE_USE_LATEST_DOTNET: true
+  ARTIFACT_PUBLISH_PULL_REQUEST_MSI: true
 
 pull_requests:
   do_not_increment_build_number: true
@@ -114,6 +115,14 @@ after_test:
 artifacts:
   - path: artifacts\Release\publish\*.zip
 
+deploy:
+- provider: GitHub
+  artifact: artifacts\Release\publish\*.zip, artifacts\Release\publish\*.msi
+  release: $(APPVEYOR_BUILD_VERSION)
+  draft: false
+  prerelease: false
+  on:
+    APPVEYOR_REPO_TAG: true  # Deploys on tag pushes
 #on_finish:
 #  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
