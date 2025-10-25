@@ -2275,7 +2275,7 @@ namespace GitCommands
                 return _isDesignMode.Value;
             }
         }
-        
+
         internal static TestAccessor GetTestAccessor() => new();
 
         internal struct TestAccessor
