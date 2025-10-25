@@ -38,7 +38,7 @@ namespace GitCommands
             Encoding commitEncoding,
             string? commentString = null,
             string? overriddenCommitMessage = null)
-            : this(messageBoxService, workingDirGitDir, commitEncoding, new FileSystem(), overriddenCommitMessage,commentString)
+            : this(messageBoxService, workingDirGitDir, commitEncoding, new FileSystem(), overriddenCommitMessage, commentString)
         {
         }
 

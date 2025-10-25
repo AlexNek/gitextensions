@@ -27,8 +27,7 @@ namespace GitCommands.Services
                     text ?? string.Empty,
                     caption ?? string.Empty,
                     MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation
-                );
+                    MessageBoxIcon.Exclamation);
             }
             else
             {
