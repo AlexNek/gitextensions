@@ -651,6 +651,7 @@ namespace GitCommandsTests
             // Assert
             result.Should().Be(string.Empty);
         }
+
         public class FormatCommitMessageTestData
         {
             private static readonly string NL = Environment.NewLine;
