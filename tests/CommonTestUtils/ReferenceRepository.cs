@@ -182,7 +182,8 @@ namespace CommonTestUtils
                 Module.GetSettings("reload local settings, too");
             }
 
-            CommitMessageManager commitMessageManager = new(DummyOwner, Module.WorkingDirGitDir, Module.CommitEncoding);
+            IMessageBoxService messageBoxService = new NUnitMessageBoxService();
+            CommitMessageManager commitMessageManager = new(messageBoxService, Module.WorkingDirGitDir, Module.CommitEncoding);
 #pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             commitMessageManager.ResetCommitMessageAsync().GetAwaiter().GetResult();
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
