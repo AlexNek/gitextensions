@@ -6,6 +6,10 @@
                 "ui", "x", "y", "my", "ls", "am", "id", "ie", "vs", "up"
             ],
             "tupleElementNameCasing": "camelCase"
-        }
+        },
+        "disabledRules": [
+            "SA1009",
+            "SA1111"
+        ]
     }
 }
