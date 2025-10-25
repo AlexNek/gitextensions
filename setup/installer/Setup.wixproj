@@ -10,8 +10,9 @@
     <ProductVersion>3.0</ProductVersion>
     <OutputName>GitExtensions</OutputName>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <PluginManagerSourceDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsBinPath)', '..', 'publish'))</PluginManagerSourceDir>
-    <DefineConstants>Version=AN-$(Version);NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)\GitExtensions.PluginManager\Output</DefineConstants>
+    <NoWarn>NU1507</NoWarn>
+    <PluginManagerSourceDir>eng\artifacts\Debug\publish\GitExtensions.PluginManager\Output</PluginManagerSourceDir>
+    <DefineConstants>Version=$(Version)-AN;NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)</DefineConstants>
     <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">Debug;$(DefineConstants)</DefineConstants>
     <SuppressIces>ICE61;ICE80;ICE91;ICE38</SuppressIces>
     <!-- Suppress: light.exe : error LGHT1105: Validation could not run due to system policy. To eliminate this warning, run the process as admin or suppress ICE validation. -->
@@ -27,21 +28,21 @@
     <Content Include="RegisterShellExtension.wxi" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.VisualStudio.wixext" Version="6.0.2" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="6.0.2" />
-    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
-    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.VisualStudio.wixext" />
+    <PackageReference Include="WixToolset.NetFx.wixext" />
+    <PackageReference Include="WixToolset.UI.wixext" />
+    <PackageReference Include="WixToolset.Util.wixext" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UI" />
   </ItemGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+  <!--<Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props'))" />
-  </Target>
-  <Target Name="DownloadPluginManager" BeforeTargets="BeforeBuild">
+  </Target>-->
+  <!-- <Target Name="DownloadPluginManager" BeforeTargets="BeforeBuild">
     <Exec Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager')" Command="powershell.exe $(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)\GitExtensions.PluginManager'" />
-  </Target>
+  </Target> -->
 </Project>

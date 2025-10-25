@@ -1,7 +1,7 @@
 ﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
   <Upgrade Id="$(var.UpgradeCode)">
-    <UpgradeVersion Property="UPGRADE" Minimum="$(var.MinSupportedVersion)" Maximum="$(var.Version)" />
+    <UpgradeVersion Property="UPGRADE" Minimum="$(var.MinSupportedVersion)" Maximum="$(var.NumericVersion)" />
     <UpgradeVersion Property="DONTUPGRADE" Maximum="$(var.MinSupportedVersion)" IncludeMaximum="no" />
     <UpgradeVersion Minimum="0.0.0" Property="PREVIOUSVERSIONSINSTALLED" MigrateFeatures="yes" IncludeMinimum="yes" />
   </Upgrade>

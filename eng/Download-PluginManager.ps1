@@ -4,10 +4,18 @@ Param(
     [string] $ExtractRootPath
 )
 
+# Normalize path by replacing double backslashes with single
+$ExtractRootPath = $ExtractRootPath -replace '\\\\', '\'
+
 Push-Location $PSScriptRoot
 
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-$Releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/gitextensions/gitextensions.pluginmanager/releases'
+try {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+    $Releases = Invoke-RestMethod -Uri 'https://api.github.com/repos/gitextensions/gitextensions.pluginmanager/releases'
+} catch {
+    Write-Host "Failed to fetch releases: $_"
+    exit 0
+}
 
 $Assets = $Releases[0].assets;
 foreach ($Asset in $Assets)
@@ -50,7 +58,8 @@ if (!($null -eq $AssetToDownload))
     }
 }
 else {
-    throw "PluginManager release not found.";
+    Write-Host "PluginManager release not found."
+    exit 0
 }
 
 Pop-Location

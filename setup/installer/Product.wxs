@@ -1,15 +1,15 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
   <?include Config.wxi?>
   <Package UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductName) $(var.Version)" Manufacturer="$(var.Manufacturer)" Version="$(var.NumericVersion)" Language="1033"><?if $(var.Platform) = x64 ?>
-    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <StandardDirectory Id="ProgramFiles64Folder" />
     <?elseif $(var.Platform) = arm64 ?>
-    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+    <StandardDirectory Id="ProgramFiles64Folder" />
     <?else?>
-    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+    <StandardDirectory Id="ProgramFilesFolder" />
     <?endif?>
     <SummaryInformation Description="$(var.ProductName)" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
-    <Property Id="ALLUSERS" Value="1" />
+    <!-- <Property Id="ALLUSERS" Value="1" /> -->
     <!--
       Read the currently configured value.
      -->
@@ -202,23 +202,16 @@
       </Component>
       <!-- Shell extensions -->
       <?define ShellExCLSID = "{3C16B20A-BA16-4156-916F-0A375ECFFE24}"?>
-      <Component Id="GitExtensionsShellEx32.dll">
-        <File Id="GitExtensionsShellEx32.dll" Name="GitExtensionsShellEx32.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx32.dll" KeyPath="yes" />
-        <?foreach ShellExFileName in GitExtensionsShellEx32.dll?>
-        <?include RegisterShellExtension.wxi?>
-        <?endforeach?>
-      </Component>
+      
       <Component Id="GitExtensionsShellEx64.dll" Condition="VersionNT64" Bitness="always64">
         
-        <File Id="GitExtensionsShellEx64.dll" Name="GitExtensionsShellEx64.dll" Source="$(var.ArtifactsPublishPath)\GitExtensionsShellEx64.dll" KeyPath="yes" />
+        <!-- File commented out -->
         <?foreach ShellExFileName in GitExtensionsShellEx64.dll?>
         <?include RegisterShellExtension.wxi?>
         <?endforeach?>
       </Component>
       <!-- End shell extensions -->
-      <Component Id="GitExtSshAskPass.exe">
-        <File Id="GitExtSshAskPass.exe" Source="$(var.ArtifactsBinPath)\GitExtSshAskPass\GitExtSshAskPass.exe" />
-      </Component>
+      
       <Component Id="checksettings.reg">
         <RegistryValue Name="CheckSettings" Value="true" Root="HKCU" Key="$(var.AppRegKey)" Type="string" />
       </Component>
@@ -664,7 +657,7 @@
       <ComponentRef Id="set_telemetry" />
       <ComponentRef Id="checksettings.reg" />
       <ComponentRef Id="InstallDir.reg" />
-      <ComponentRef Id="GitExtSshAskPass.exe" />
+      
       <ComponentRef Id="GitExtensions.newstartmenu" />
       <ComponentRef Id="GitExtensions.startmenu" />
       <!-- Plugin Manager build artifacts -->
@@ -843,8 +836,8 @@
         </Feature>
       </Feature>
       <Feature Id="ShellExtension" Title="Windows Explorer integration" Level="1">
-        <ComponentRef Id="GitExtensionsShellEx32.dll" />
-        <ComponentRef Id="GitExtensionsShellEx64.dll" />
+        
+        
       </Feature>
       <Feature Id="AddToPath" Title="Add installation directory to PATH" Level="1">
         <ComponentRef Id="Path" />
@@ -863,8 +856,8 @@
       <Custom Action="LaunchFile" After="InstallFinalize" Condition="( NOT Installed ) AND ( LAUNCH = &quot;1&quot; )" />
     </InstallExecuteSequence>
   
-      <Directory Id="$(var.PlatformProgramFilesFolder)">
-        <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+      <Directory Id="INSTALLDIR">
+        <Directory Id="INSTALLFOLDER" Name="$(var.InstallName)">
           <Directory Id="PluginsDir" Name="Plugins" />
           <Directory Id="DictionariesDir" Name="Dictionaries" />
           <Directory Id="TranslationsDir" Name="Translation" />

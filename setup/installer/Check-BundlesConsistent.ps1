@@ -6,7 +6,8 @@ Param(
 [xml]$productWxs = Get-Content $PSScriptRoot/Product.wxs;
 
 [array] $components = @();
-$components += ($productWxs.Wix.Product.DirectoryRef).Component.File.Source;
+$allFiles = $productWxs.SelectNodes("//File");
+$components += $allFiles | ForEach-Object { $_.Source };
 
 $missingItems = @();
 Get-ChildItem -Path $publishedPath -Recurse | `

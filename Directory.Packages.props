@@ -37,6 +37,10 @@
     <!-- Setup infra -->
     <PackageVersion Include="vswhere" Version="3.1.7" />
     <PackageVersion Include="WiX" Version="3.14.1" />
+    <PackageVersion Include="WixToolset.VisualStudio.wixext" Version="6.0.2" />
+    <PackageVersion Include="WixToolset.NetFx.wixext" Version="6.0.2" />
+    <PackageVersion Include="WixToolset.UI.wixext" Version="6.0.2" />
+    <PackageVersion Include="WixToolset.Util.wixext" Version="6.0.2" />
 
     <!-- Test infra -->
     <PackageVersion Include="Appveyor.TestLogger" Version="2.0.0" />
