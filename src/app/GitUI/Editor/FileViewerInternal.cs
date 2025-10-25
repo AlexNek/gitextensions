@@ -1,6 +1,7 @@
 ﻿using GitCommands;
 using GitCommands.Settings;
 using GitExtensions.Extensibility;
+using GitExtensions.Extensibility.Git;
 using GitExtUtils;
 using GitExtUtils.GitUI;
 using GitExtUtils.GitUI.Theming;
@@ -350,8 +351,16 @@ namespace GitUI.Editor
         public void SetHighlightingForFile(string filename)
         {
             IHighlightingStrategy highlightingStrategy;
+            if (!TryGetUICommandsDirect(out IGitUICommands? commands))
+            {
+                // UICommands not available yet, set default highlighting
+                highlightingStrategy = HighlightingManager.Manager.FindHighlighterForFile(filename);
+                SetHighlightingStrategy(highlightingStrategy);
+                return;
+            }
+
             var commentStrategy = CommentStrategyFactory.GetSelected();
-            var comment = commentStrategy.GetComment(Module);
+            var comment = commentStrategy.GetComment(commands.Module);
             if (filename.EndsWith("git-rebase-todo"))
             {
                 highlightingStrategy = new RebaseTodoHighlightingStrategy(comment);
