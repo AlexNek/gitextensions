@@ -26,7 +26,7 @@ For the original project, visit [github.com/gitextensions/gitextensions](https:/
 
 <a href="#backers" alt="sponsors on Open Collective"><img src="https://opencollective.com/gitextensions/backers/badge.svg" /></a> <a href="#sponsors" alt="Sponsors on Open Collective"><img src="https://opencollective.com/gitextensions/sponsors/badge.svg" /></a>
 
-### Next Version ([build instructions](https://github.com/gitextensions/gitextensions/wiki/Build-instructions))
+### Next Version ([build instructions](docu/DeveloperGuide.md))
 
 <table>
   <tr>
@@ -54,7 +54,7 @@ For the original project, visit [github.com/gitextensions/gitextensions](https:/
       Current dev status
     </td>
     <td>
-      <a href="https://ci.appveyor.com/project/gitextensions/gitextensions/branch/master"><img alt="Build status" src="https://ci.appveyor.com/api/projects/status/yo5kw7sl6da8danr/branch/master?svg=true" style="max-width:100%;"></a>
+      <a href="https://ci.appveyor.com/project/gitextensions/gitextensions/branch/master"><img alt="Build status" src="https://ci.appveyor.com/api/projects/status/yo5kw7sl6da8danr/branch/master?svg=true" style="max-width:100%;"></a> (Note: CI may need to be configured for this fork)
     </td>
   </tr>
   <tr>
@@ -62,14 +62,14 @@ For the original project, visit [github.com/gitextensions/gitextensions](https:/
       Translations
     </td>
     <td>
-      <a target="_blank" style="text-decoration:none; color:black; font-size:66%" href="https://github.com/gitextensions/gitextensions/wiki/Translations" title="More information in the wiki"><img src="https://img.shields.io/badge/tranlations-Transifex-blue" ></a>
+      <a target="_blank" style="text-decoration:none; color:black; font-size:66%" href="https://github.com/gitextensions/gitextensions/wiki/Translations" title="More information in the original wiki"><img src="https://img.shields.io/badge/tranlations-Transifex-blue" ></a>
     </td>
   </tr>
 </table>
 
 ### Older versions
 
-See [build instructions](https://github.com/gitextensions/gitextensions/wiki/Build-instructions)
+See [build instructions](docu/DeveloperGuide.md)
 
 ## Downloads
 
