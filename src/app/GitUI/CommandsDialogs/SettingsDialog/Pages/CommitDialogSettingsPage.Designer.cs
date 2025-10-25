@@ -43,12 +43,19 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             chkShowResetWorkTreeChanges = new CheckBox();
             chkShowResetAllChanges = new CheckBox();
             chkEnsureCommitMessageSecondLineEmpty = new CheckBox();
+            grpTemplateComment = new GroupBox();
+            tableLayoutPanelComment = new TableLayoutPanel();
+            lblTemplateComment = new Label();
+            cbCommentStrategy = new ComboBox();
+            lblCommentStrategyDescription = new Label();
             groupBoxBehaviour.SuspendLayout();
             tableLayoutPanelBehaviour.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this
                 ._NO_TRANSLATE_CommitDialogNumberOfPreviousMessages)).BeginInit();
             grpAdditionalButtons.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            grpTemplateComment.SuspendLayout();
+            tableLayoutPanelComment.SuspendLayout();
             SuspendLayout();
             // 
             // groupBoxBehaviour
@@ -240,15 +247,76 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
                 "Ensure the second line of commit message is empty";
             chkEnsureCommitMessageSecondLineEmpty.UseVisualStyleBackColor = true;
             // 
+            // grpTemplateComment
+            // 
+            grpTemplateComment.AutoSize = true;
+            grpTemplateComment.Controls.Add(tableLayoutPanelComment);
+            grpTemplateComment.Dock = DockStyle.Top;
+            grpTemplateComment.Location = new Point(0, 294);
+            grpTemplateComment.Name = "grpTemplateComment";
+            grpTemplateComment.Size = new Size(971, 120);
+            grpTemplateComment.TabIndex = 57;
+            grpTemplateComment.TabStop = false;
+            grpTemplateComment.Text = "Comment Definition";
+            // 
+            // tableLayoutPanelComment
+            // 
+            tableLayoutPanelComment.ColumnCount = 2;
+            tableLayoutPanelComment.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 355F));
+            tableLayoutPanelComment.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanelComment.Controls.Add(lblTemplateComment, 0, 0);
+            tableLayoutPanelComment.Controls.Add(cbCommentStrategy, 1, 0);
+            tableLayoutPanelComment.Controls.Add(lblCommentStrategyDescription, 1, 1);
+            tableLayoutPanelComment.Dock = DockStyle.Top;
+            tableLayoutPanelComment.Location = new Point(3, 19);
+            tableLayoutPanelComment.Name = "tableLayoutPanelComment";
+            tableLayoutPanelComment.RowCount = 2;
+            tableLayoutPanelComment.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanelComment.RowStyles.Add(new RowStyle());
+            tableLayoutPanelComment.Size = new Size(965, 98);
+            tableLayoutPanelComment.TabIndex = 0;
+            // 
+            // lblTemplateComment
+            // 
+            lblTemplateComment.Anchor = AnchorStyles.Left;
+            lblTemplateComment.AutoSize = true;
+            lblTemplateComment.Location = new Point(3, 11);
+            lblTemplateComment.Name = "lblTemplateComment";
+            lblTemplateComment.Size = new Size(106, 15);
+            lblTemplateComment.TabIndex = 3;
+            lblTemplateComment.Text = "Comment strategy";
+            // 
+            // cbCommentStrategy
+            // 
+            cbCommentStrategy.FormattingEnabled = true;
+            cbCommentStrategy.Location = new Point(358, 3);
+            cbCommentStrategy.Name = "cbCommentStrategy";
+            cbCommentStrategy.Size = new Size(190, 23);
+            cbCommentStrategy.TabIndex = 6;
+            cbCommentStrategy.SelectedIndexChanged += cbCommentStrategy_SelectedIndexChanged;
+            // 
+            // lblCommentStrategyDescription
+            // 
+            lblCommentStrategyDescription.Location = new Point(358, 38);
+            lblCommentStrategyDescription.MaximumSize = new Size(400, 0);
+            lblCommentStrategyDescription.MinimumSize = new Size(0, 60);
+            lblCommentStrategyDescription.Name = "lblCommentStrategyDescription";
+            lblCommentStrategyDescription.Size = new Size(300, 60);
+            lblCommentStrategyDescription.TabIndex = 7;
+            lblCommentStrategyDescription.Text = "[Dynamic load]";
+            lblCommentStrategyDescription.UseMnemonic = false;
+            // 
             // CommitDialogSettingsPage
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
             AutoScroll = true;
+            Controls.Add(grpTemplateComment);
             Controls.Add(groupBoxBehaviour);
             Name = "CommitDialogSettingsPage";
             Size = new Size(1014, 950);
             Text = "Commit dialog";
+            Load += CommitDialogSettingsPage_Load;
             groupBoxBehaviour.ResumeLayout(false);
             groupBoxBehaviour.PerformLayout();
             tableLayoutPanelBehaviour.ResumeLayout(false);
@@ -259,6 +327,9 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             grpAdditionalButtons.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
+            grpTemplateComment.ResumeLayout(false);
+            tableLayoutPanelComment.ResumeLayout(false);
+            tableLayoutPanelComment.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -279,5 +350,10 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
         private CheckBox chkEnsureCommitMessageSecondLineEmpty;
         private CheckBox chkAutocomplete;
         private CheckBox cbRememberAmendCommitState;
+        private GroupBox grpTemplateComment;
+        private TableLayoutPanel tableLayoutPanelComment;
+        private Label lblTemplateComment;
+        private ComboBox cbCommentStrategy;
+        private Label lblCommentStrategyDescription;
     }
 }

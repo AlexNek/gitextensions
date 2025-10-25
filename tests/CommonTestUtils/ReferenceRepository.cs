@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using GitCommands;
 using GitCommands.Config;
+using GitCommands.Services;
 using LibGit2Sharp;
 
 namespace CommonTestUtils
@@ -156,6 +157,35 @@ namespace CommonTestUtils
         {
             using Repository repository = new(Module.WorkingDir);
             Commands.Fetch(repository, remoteName, Array.Empty<string>(), new FetchOptions(), null);
+        }
+
+        private void Reset()
+        {
+            // Undo potential impact from earlier tests
+            using (Repository repository = new(Module.WorkingDir))
+            {
+                CheckoutOptions options = new();
+                repository.Reset(LibGit2Sharp.ResetMode.Hard, (Commit)repository.Lookup(CommitHash, LibGit2Sharp.ObjectType.Commit), options);
+                repository.RemoveUntrackedFiles();
+
+                string[] remoteNames = repository.Network.Remotes.Select(remote => remote.Name).ToArray();
+                foreach (string remoteName in remoteNames)
+                {
+                    repository.Network.Remotes.Remove(remoteName);
+                }
+
+                repository.Config.Set(SettingKeyString.UserName, "author");
+                repository.Config.Set(SettingKeyString.UserEmail, "author@mail.com");
+
+                Module.InvalidateGitSettings();
+                Module.GetEffectiveSetting("reload now");
+                Module.GetSettings("reload local settings, too");
+            }
+
+            CommitMessageManager commitMessageManager = new(DummyOwner, Module.WorkingDirGitDir, Module.CommitEncoding);
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+            commitMessageManager.ResetCommitMessageAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         public void Stash(string stashMessage, string content = null)

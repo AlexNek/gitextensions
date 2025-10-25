@@ -1,8 +1,10 @@
 ﻿using GitCommands;
 using GitCommands.Git;
+using GitCommands.Services;
 using GitExtensions.Extensibility;
 using GitExtensions.Extensibility.Git;
 using GitExtUtils.GitUI;
+using GitUI.GitComments;
 using GitUI.HelperDialogs;
 using GitUIPluginInterfaces;
 using Microsoft.VisualStudio.Threading;
@@ -132,7 +134,11 @@ namespace GitUI.CommandsDialogs
                 }
             }
 
-            CommitMessageManager commitMessageManager = new(this, Module.WorkingDirGitDir, Module.CommitEncoding);
+            IMessageBoxService messageBoxService = new WinFormsMessageBoxService(this);
+            var commentStrategy = CommentStrategyFactory.GetSelected();
+            var commentDefinition = commentStrategy.GetComment(Module);
+
+            CommitMessageManager commitMessageManager = new(messageBoxService, Module.WorkingDirGitDir, Module.CommitEncoding, commentString: commentDefinition);
 
             string existingCommitMessage = ThreadHelper.JoinableTaskFactory.Run(() => commitMessageManager.GetMergeOrCommitMessageAsync());
 

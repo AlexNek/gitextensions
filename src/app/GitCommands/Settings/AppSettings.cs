@@ -50,6 +50,7 @@ namespace GitCommands
 
         private static Mutex _globalMutex;
 
+
         [GeneratedRegex(@"^(?<major>\d+)\.(?<minor>\d+)", RegexOptions.ExplicitCapture)]
         private static partial Regex VersionRegex();
 
@@ -455,7 +456,7 @@ namespace GitCommands
             get => GetString("lastCommitMessage", "");
             set => SetString("lastCommitMessage", value);
         }
-
+        
         public static int CommitDialogNumberOfPreviousMessages
         {
             get => GetInt("commitDialogNumberOfPreviousMessages", 6);
@@ -2071,6 +2072,12 @@ namespace GitCommands
             set => SetBool("Log.CaptureCallStacks", value);
         }
 
+        public static int CommentStrategyId
+        {
+            get => GetInt("CommentStrategyId", 1);
+            set => SetInt("CommentStrategyId", value);
+        }
+
         // There is a bug in .NET/.NET Designer that fails to execute Properties.Settings.Default call.
         // Return false whilst we're in the designer.
         public static bool IsPortable() => !IsDesignMode && Properties.Settings.Default.IsPortable;
@@ -2270,6 +2277,7 @@ namespace GitCommands
             }
         }
 
+        
         internal static TestAccessor GetTestAccessor() => new();
 
         internal struct TestAccessor

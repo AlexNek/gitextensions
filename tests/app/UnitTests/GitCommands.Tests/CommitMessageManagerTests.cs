@@ -4,7 +4,10 @@ using System.Text;
 using CommonTestUtils;
 using FluentAssertions;
 using GitCommands;
+using GitCommands.Services;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GitCommandsTests
 {
@@ -33,7 +36,9 @@ namespace GitCommandsTests
         private CommitMessageManager _manager;
 
         // We don't expect any failures so that we won't be switching to the main thread or showing messages
-        private readonly Control _owner = ReferenceRepository.DummyOwner;
+        // private readonly Control _owner = ReferenceRepository.DummyOwner;
+
+        private IMessageBoxService _messageBoxService = new NUnitMessageBoxService();
 
         public CommitMessageManagerTests()
         {
@@ -67,7 +72,7 @@ namespace GitCommandsTests
             _fileSystem.Directory.Returns(_directory);
             _fileSystem.Path.Returns(path);
 
-            _manager = new CommitMessageManager(_owner, _workingDirGitDir, _encoding, _fileSystem, overriddenCommitMessage: null);
+            _manager = new CommitMessageManager(_messageBoxService, _workingDirGitDir, _encoding, _fileSystem, overriddenCommitMessage: null);
         }
 
         [TearDown]
@@ -80,13 +85,21 @@ namespace GitCommandsTests
 
         public void SetupExtra(string overriddenCommitMessage)
         {
-            _manager = new CommitMessageManager(_owner, _workingDirGitDir, _encoding, _fileSystem, overriddenCommitMessage);
+            _manager = new CommitMessageManager(_messageBoxService, _workingDirGitDir, _encoding, _fileSystem, overriddenCommitMessage);
         }
 
         [TestCase(null)]
         public void Constructor_should_throw(string workingDirGitDir)
         {
-            ((Action)(() => new CommitMessageManager(_owner, workingDirGitDir, _encoding))).Should().Throw<ArgumentNullException>();
+            // Arrange
+            IMessageBoxService messageBoxService = _messageBoxService;
+            Encoding encoding = _encoding;
+
+            // Act
+            Action act = () => new CommitMessageManager(messageBoxService, workingDirGitDir, encoding);
+
+            // Assert
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [TestCase("")]
@@ -94,7 +107,8 @@ namespace GitCommandsTests
         [TestCase("::")]
         public void Constructor_should_not_throw(string workingDirGitDir)
         {
-            new CommitMessageManager(_owner, workingDirGitDir, _encoding).Should().NotBeNull();
+            CommitMessageManager commitMessageManager = new(_messageBoxService, workingDirGitDir, _encoding);
+            commitMessageManager.Should().NotBeNull();
         }
 
         [Test]
@@ -207,7 +221,7 @@ namespace GitCommandsTests
         [Test]
         public async Task WriteCommitMessageToFileAsync_should_write_COMMITMESSAGE()
         {
-            CommitMessageManager manager = new(_owner, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding, overriddenCommitMessage: null);
+            CommitMessageManager manager = new(_messageBoxService, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding, overriddenCommitMessage: null);
 
             File.Exists(manager.CommitMessagePath).Should().BeFalse();
 
@@ -226,7 +240,7 @@ namespace GitCommandsTests
             GitModule module = _referenceRepository.Module;
             module.SetSetting("i18n.commitencoding", encodingName);
             module.CommitEncoding.Preamble.Length.Should().Be(0);
-            CommitMessageManager manager = new(_owner, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding);
+            CommitMessageManager manager = new(_messageBoxService, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding);
 
             File.Exists(manager.CommitMessagePath).Should().BeFalse();
 
@@ -240,7 +254,7 @@ namespace GitCommandsTests
         [Test]
         public async Task WriteCommitMessageToFileAsync_should_write_MERGE_MSG()
         {
-            CommitMessageManager manager = new(_owner, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding, overriddenCommitMessage: null);
+            CommitMessageManager manager = new(_messageBoxService, _referenceRepository.Module.WorkingDir, _referenceRepository.Module.CommitEncoding, overriddenCommitMessage: null);
 
             File.Exists(manager.MergeMessagePath).Should().BeFalse();
 
@@ -415,50 +429,267 @@ namespace GitCommandsTests
             ClassicAssert.That(!deletedM);
         }
 
-        [Test, TestCaseSource(typeof(FormatCommitMessageTestData), nameof(FormatCommitMessageTestData.FormatCommitMessageTestCases))]
-        public void FormatCommitMessage(
-        string commitMessageText, bool usingCommitTemplate, bool ensureCommitMessageSecondLineEmpty, string expectedMessage)
+        // Exception / message box tests
+
+        [Test]
+        public async Task GetMergeOrCommitMessageAsync_should_call_messageboxservice_on_exception()
         {
-            CommitMessageManager.FormatCommitMessage(commitMessageText, usingCommitTemplate, ensureCommitMessageSecondLineEmpty)
-                .Should().Be(expectedMessage);
+            IMessageBoxService messageBoxService = Substitute.For<IMessageBoxService>();
+            messageBoxService.ShowInfoMessageAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
+
+            FileBase file = Substitute.For<FileBase>();
+            file.Exists(_commitMessagePath).Returns(true);
+            file.Exists(_mergeMessagePath).Returns(false);
+            file.ReadAllTextAsync(_commitMessagePath, _encoding, cancellationToken: default).Throws(new IOException("read boom"));
+
+            DirectoryBase directory = Substitute.For<DirectoryBase>();
+
+            PathBase path = Substitute.For<PathBase>();
+            path.Combine(Arg.Any<string>(), Arg.Any<string>()).Returns(x => Path.Combine((string)x[0], (string)x[1]));
+
+            IFileSystem fileSystem = Substitute.For<IFileSystem>();
+            fileSystem.File.Returns(file);
+            fileSystem.Directory.Returns(directory);
+            fileSystem.Path.Returns(path);
+
+            CommitMessageManager manager = new(messageBoxService, _workingDirGitDir, _encoding, fileSystem, overriddenCommitMessage: null);
+
+            string result = await manager.GetMergeOrCommitMessageAsync();
+
+            result.Should().BeEmpty();
+            await messageBoxService.Received(1).ShowInfoMessageAsync(
+                Arg.Is<string>(m => m.Contains("read boom") && m.Contains(_commitMessagePath)),
+                "Cannot read commit message");
         }
 
+        [Test]
+        public async Task WriteCommitMessageToFileAsync_should_call_messageboxservice_on_exception()
+        {
+            IMessageBoxService messageBoxService = Substitute.For<IMessageBoxService>();
+            messageBoxService.ShowInfoMessageAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
+
+            FileBase file = Substitute.For<FileBase>();
+            DirectoryBase directory = Substitute.For<DirectoryBase>();
+            directory.Exists(Arg.Any<string>()).Returns(true);
+
+            file.WriteAllTextAsync(_commitMessagePath, Arg.Any<string>(), _encoding, cancellationToken: default)
+                .Throws(new IOException("write boom"));
+
+            PathBase path = Substitute.For<PathBase>();
+            path.Combine(Arg.Any<string>(), Arg.Any<string>())
+                .Returns(x => Path.Combine((string)x[0], (string)x[1]));
+
+            IFileSystem fileSystem = Substitute.For<IFileSystem>();
+            fileSystem.File.Returns(file);
+            fileSystem.Directory.Returns(directory);
+            fileSystem.Path.Returns(path);
+
+            CommitMessageManager manager = new(messageBoxService, _workingDirGitDir, _encoding, fileSystem, overriddenCommitMessage: null);
+
+            await manager.WriteCommitMessageToFileAsync("msg", CommitMessageType.Normal, false, false);
+
+            await messageBoxService.Received(1).ShowInfoMessageAsync(
+                Arg.Is<string>(m => m.Contains("write boom") && m.Contains(_commitMessagePath)),
+                "Cannot save commit message");
+        }
+
+        [Test]
+        public async Task GetAmendStateAsync_should_call_messageboxservice_on_exception()
+        {
+            IMessageBoxService messageBoxService = Substitute.For<IMessageBoxService>();
+            messageBoxService.ShowInfoMessageAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
+
+            FileBase file = Substitute.For<FileBase>();
+            file.Exists(_amendSaveStatePath).Returns(true);
+            file.ReadAllTextAsync(_amendSaveStatePath, Encoding.Default, cancellationToken: default)
+                .Throws(new IOException("amend read boom"));
+
+            DirectoryBase directory = Substitute.For<DirectoryBase>();
+
+            PathBase path = Substitute.For<PathBase>();
+            path.Combine(Arg.Any<string>(), Arg.Any<string>())
+                .Returns(x => Path.Combine((string)x[0], (string)x[1]));
+
+            IFileSystem fileSystem = Substitute.For<IFileSystem>();
+            fileSystem.File.Returns(file);
+            fileSystem.Directory.Returns(directory);
+            fileSystem.Path.Returns(path);
+
+            CommitMessageManager manager = new(messageBoxService, _workingDirGitDir, _encoding, fileSystem, overriddenCommitMessage: null);
+
+            AppSettings.RememberAmendCommitState = true;
+
+            bool amend = await manager.GetAmendStateAsync();
+
+            amend.Should().BeFalse();
+            await messageBoxService.Received(1).ShowInfoMessageAsync(
+                Arg.Is<string>(m => m.Contains("amend read boom") && m.Contains(_amendSaveStatePath)),
+                "Cannot read amend state");
+        }
+
+        [Test]
+        public async Task SetAmendStateAsync_should_call_messageboxservice_on_exception_when_writing_true()
+        {
+            IMessageBoxService messageBoxService = Substitute.For<IMessageBoxService>();
+            messageBoxService.ShowInfoMessageAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
+
+            FileBase file = Substitute.For<FileBase>();
+            DirectoryBase directory = Substitute.For<DirectoryBase>();
+            directory.Exists(Path.GetDirectoryName(_amendSaveStatePath)).Returns(true);
+
+            file.WriteAllTextAsync(_amendSaveStatePath, true.ToString(), Encoding.Default, cancellationToken: default)
+                .Throws(new IOException("amend write boom"));
+
+            PathBase path = Substitute.For<PathBase>();
+            path.Combine(Arg.Any<string>(), Arg.Any<string>())
+                .Returns(x => Path.Combine((string)x[0], (string)x[1]));
+
+            IFileSystem fileSystem = Substitute.For<IFileSystem>();
+            fileSystem.File.Returns(file);
+            fileSystem.Directory.Returns(directory);
+            fileSystem.Path.Returns(path);
+
+            CommitMessageManager manager = new(messageBoxService, _workingDirGitDir, _encoding, fileSystem, overriddenCommitMessage: null);
+
+            AppSettings.RememberAmendCommitState = true;
+
+            await manager.SetAmendStateAsync(true);
+
+            await messageBoxService.Received(1).ShowInfoMessageAsync(
+                Arg.Is<string>(m => m.Contains("amend write boom") && m.Contains(_amendSaveStatePath)),
+                "Cannot save amend state");
+        }
+
+        [Test, TestCaseSource(typeof(FormatCommitMessageTestData), nameof(FormatCommitMessageTestData.FormatCommitMessageTestCases))]
+        public void FormatCommitMessage_should_return_expected(
+            string commitMessageText,
+            bool usingCommitTemplate,
+            bool ensureCommitMessageSecondLineEmpty,
+            string expectedMessage,
+            string commentString)
+        {
+            CommitMessageManager cut = new(_messageBoxService, string.Empty, null, commentString);
+            string commitMessage = cut.FormatCommitMessage(commitMessageText, usingCommitTemplate, ensureCommitMessageSecondLineEmpty);
+
+            commitMessage.Should().Be(expectedMessage);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("#")]
+        [TestCase(";")]
+        [TestCase("//")]
+        public void FormatCommitMessage_should_remove_comment_line_when_using_template(string? commentString)
+        {
+            // Arrange
+            CommitMessageManager cut = new(_messageBoxService, string.Empty, Encoding.UTF8, commentString);
+            string input = commentString is not null && commentString.Length > 0
+                ? $"{commentString}comment\nactual message"
+                : "actual message";
+            string expected = "actual message" + Environment.NewLine;
+
+            // Act
+            string result = cut.FormatCommitMessage(input, usingCommitTemplate: true, ensureCommitMessageSecondLineEmpty: false);
+
+            // Assert
+            result.Should().Be(expected);
+        }
+
+        private static string ToUnixStyleLineEnding(string? s)
+        {
+            return s is null ? string.Empty : s.Replace("\r\n", "\n");
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("#")]
+        [TestCase(";")]
+        [TestCase("//")]
+        public void FormatCommitMessage_should_keep_comment_line_when_not_using_template(string? commentString)
+        {
+            CommitMessageManager cut = new(_messageBoxService, string.Empty, Encoding.UTF8, commentString);
+            string input = commentString is not null && commentString.Length > 0
+                ? $"{commentString}comment\nactual message"
+                : "actual message";
+            string expected = input + "\n";
+
+            string result = cut.FormatCommitMessage(input, usingCommitTemplate: false, ensureCommitMessageSecondLineEmpty: false);
+
+            ToUnixStyleLineEnding(result).Should().Be(expected);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("#")]
+        [TestCase(";")]
+        [TestCase("//")]
+        public void FormatCommitMessage_should_return_empty_for_empty_input(string? commentString)
+        {
+            // Arrange
+            CommitMessageManager cut = new(_messageBoxService, string.Empty, Encoding.UTF8, commentString);
+
+            // Act
+            string result = cut.FormatCommitMessage(string.Empty, usingCommitTemplate: true, ensureCommitMessageSecondLineEmpty: false);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("#")]
+        [TestCase(";")]
+        [TestCase("//")]
+        public void FormatCommitMessage_should_return_empty_for_null_input(string? commentString)
+        {
+            // Arrange
+            CommitMessageManager cut = new(_messageBoxService, string.Empty, Encoding.UTF8, commentString);
+
+            // Act
+            string result = cut.FormatCommitMessage(null, usingCommitTemplate: true, ensureCommitMessageSecondLineEmpty: false);
+
+            // Assert
+            result.Should().Be(string.Empty);
+        }
         public class FormatCommitMessageTestData
         {
             private static readonly string NL = Environment.NewLine;
+            private static readonly string[] CommentStrings = new[] { "#", ";", "//" };
 
             public static IEnumerable FormatCommitMessageTestCases
             {
                 get
                 {
-                    // string commitMessageText, bool usingCommitTemplate, bool ensureCommitMessageSecondLineEmpty, string expectedMessage
-                    yield return new TestCaseData(new object[] { null, false, false, "" });
-                    yield return new TestCaseData(new object[] { null, true, false, "" });
-                    yield return new TestCaseData(new object[] { null, false, true, "" });
-                    yield return new TestCaseData(new object[] { null, true, true, "" });
-                    yield return new TestCaseData(new object[] { "", false, false, "" });
-                    yield return new TestCaseData(new object[] { "", true, false, "" });
-                    yield return new TestCaseData(new object[] { "", false, true, "" });
-                    yield return new TestCaseData(new object[] { "", true, true, "" });
-                    yield return new TestCaseData(new object[] { "\n", false, false, NL + NL });
-                    yield return new TestCaseData(new object[] { "\n", true, false, NL + NL });
-                    yield return new TestCaseData(new object[] { "\n", false, true, NL + NL });
-                    yield return new TestCaseData(new object[] { "\n", true, true, NL + NL });
-                    yield return new TestCaseData(new object[] { "1", true, false, "1" + NL });
-                    yield return new TestCaseData(new object[] { "#1", false, false, "#1" + NL });
-                    yield return new TestCaseData(new object[] { "#1", true, false, "" });
-                    yield return new TestCaseData(new object[] { "1\n\n3", false, false, "1" + NL + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "1\n\n3", false, true, "1" + NL + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "1\n2\n3", false, false, "1" + NL + "2" + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "1\n2\n3", false, true, "1" + NL + NL + "2" + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "#0\n1\n\n3", true, false, "1" + NL + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "#0\n1\n\n3", true, true, "1" + NL + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "#0\n1\n2\n3", true, false, "1" + NL + "2" + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "#0\n1\n2\n3", true, true, "1" + NL + NL + "2" + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "#0\n1\n#0\n2\n3", true, true, "1" + NL + NL + "2" + NL + "3" + NL });
-                    yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10", true, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL });
-                    yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10", false, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL });
-                    yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10\n", false, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL + NL });
+                    foreach (string commentString in CommentStrings)
+                    {
+                        yield return new TestCaseData(new object[] { null, false, false, "", commentString });
+                        yield return new TestCaseData(new object[] { null, true, false, "", commentString });
+                        yield return new TestCaseData(new object[] { null, false, true, "", commentString });
+                        yield return new TestCaseData(new object[] { null, true, true, "", commentString });
+                        yield return new TestCaseData(new object[] { "", false, false, "", commentString });
+                        yield return new TestCaseData(new object[] { "", true, false, "", commentString });
+                        yield return new TestCaseData(new object[] { "", false, true, "", commentString });
+                        yield return new TestCaseData(new object[] { "", true, true, "", commentString });
+                        yield return new TestCaseData(new object[] { "\n", false, false, NL + NL, commentString });
+                        yield return new TestCaseData(new object[] { "\n", true, false, NL + NL, commentString });
+                        yield return new TestCaseData(new object[] { "\n", false, true, NL + NL, commentString });
+                        yield return new TestCaseData(new object[] { "\n", true, true, NL + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1", true, false, "1" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "1", false, false, commentString + "1" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "1", true, false, "", commentString });
+                        yield return new TestCaseData(new object[] { "1\n\n3", false, false, "1" + NL + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n\n3", false, true, "1" + NL + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n2\n3", false, false, "1" + NL + "2" + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n2\n3", false, true, "1" + NL + NL + "2" + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "0\n1\n\n3", true, false, "1" + NL + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "0\n1\n\n3", true, true, "1" + NL + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "0\n1\n2\n3", true, false, "1" + NL + "2" + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "0\n1\n2\n3", true, true, "1" + NL + NL + "2" + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { commentString + "0\n1\n" + commentString + "0\n2\n3", true, true, "1" + NL + NL + "2" + NL + "3" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10", true, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10", false, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL, commentString });
+                        yield return new TestCaseData(new object[] { "1\n2\n3\n4\n5\n\n7\n\n\n10\n", false, true, "1" + NL + NL + "2" + NL + "3" + NL + "4" + NL + "5" + NL + NL + "7" + NL + NL + NL + "10" + NL + NL, commentString });
+                    }
                 }
             }
         }
