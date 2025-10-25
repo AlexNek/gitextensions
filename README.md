@@ -22,6 +22,18 @@ This repository is a fork of the original [GitExtensions project](https://github
 
 For the original project, visit [github.com/gitextensions/gitextensions](https://github.com/gitextensions/gitextensions).
 
+## Key Differences from Original Project
+
+This fork diverges from the original GitExtensions in several ways to address specific needs:
+
+1. **Architecture**: Modified to incorporate alternative design patterns and faster iteration on features.
+2. **Development Speed**: PRs in the original project can take a long time to be reviewed and merged. This fork allows for quicker contributions and updates.
+3. **Focus**: Emphasizes personal customization and rapid prototyping over broad community consensus.
+4. **Documentation**: Enhanced with detailed architecture docs and developer guides specific to the fork's changes.
+5. **Extensions**: Visual Studio and other integrations may require adaptation for fork-specific features.
+
+If you're looking for stable, community-vetted releases, stick with the original. This fork is ideal for developers wanting to experiment or need specific architectural changes.
+
 ## Current Status
 
 <a href="#backers" alt="sponsors on Open Collective"><img src="https://opencollective.com/gitextensions/backers/badge.svg" /></a> <a href="#sponsors" alt="Sponsors on Open Collective"><img src="https://opencollective.com/gitextensions/sponsors/badge.svg" /></a>
@@ -73,9 +85,9 @@ See [build instructions](docu/DeveloperGuide.md)
 
 ## Downloads
 
-<a href="https://github.com/gitextensions/gitextensions/releases" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/github/downloads/gitextensions/gitextensions/total.svg?label=GitHub%20downloads%20(total)&cacheSeconds=86400"></a> <a href="https://chocolatey.org/packages/gitextensions" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/chocolatey/dt/gitextensions.svg?label=Chocolatey%20downloads%20(total)&cacheSeconds=86400"></a>
+<a href="https://github.com/AlexNek/gitextensions/releases" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/github/downloads/AlexNek/gitextensions/total.svg?label=GitHub%20downloads%20(total)&cacheSeconds=86400"></a> <a href="https://chocolatey.org/packages/gitextensions" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/chocolatey/dt/gitextensions.svg?label=Chocolatey%20downloads%20(total)&cacheSeconds=86400"></a>
 
-**[Download it now](https://github.com/gitextensions/gitextensions/releases/latest)** or install it with [Chocolatey](https://chocolatey.org/packages/gitextensions) or [Winget](https://winget.run/pkg/GitExtensionsTeam/GitExtensions).
+**[Download it now](https://github.com/AlexNek/gitextensions/releases/latest)** or install it with [Chocolatey](https://chocolatey.org/packages/gitextensions) or [Winget](https://winget.run/pkg/GitExtensionsTeam/GitExtensions).
 
 If you want to **update a portable version**, you should delete all the files and the subfolders from the existing folder except:
 
@@ -86,11 +98,11 @@ If you want to **update a portable version**, you should delete all the files an
 <table>
   <tr>
     <td>
-      <strong>Latest Release: v6.0.2</strong>
+      <strong>Latest Release</strong>
     </td>
     <td>
-      <a href="https://github.com/gitextensions/gitextensions/releases/latest">[ Download ]</a><br />
-      <a href="https://github.com/gitextensions/gitextensions/releases/latest" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/github/downloads/gitextensions/gitextensions/latest/total.svg?label=GitHub%20downloads%20(latest)&cacheSeconds=3600"></a>
+      <a href="https://github.com/AlexNek/gitextensions/releases/latest">[ Download ]</a><br />
+      <a href="https://github.com/AlexNek/gitextensions/releases/latest" rel="nofollow" style="vertical-align: -webkit-baseline-middle;"><img src="https://img.shields.io/github/downloads/AlexNek/gitextensions/latest/total.svg?label=GitHub%20downloads%20(latest)&cacheSeconds=3600"></a>
     </td>
   </tr>
   <tr>
@@ -100,7 +112,7 @@ If you want to **update a portable version**, you should delete all the files an
     </td>
     <td>
       <a href="https://ci.appveyor.com/project/gitextensions/gitextensions/branch/master/artifacts">[ Download ]</a><br />
-      <a href="https://ci.appveyor.com/project/gitextensions/gitextensions/branch/master"><img alt="Build status" src="https://ci.appveyor.com/api/projects/status/yo5kw7sl6da8danr/branch/master?svg=true" style="max-width:100%;"></a>
+      <a href="https://ci.appveyor.com/project/gitextensions/gitextensions/branch/master"><img alt="Build status" src="https://ci.appveyor.com/api/projects/status/yo5kw7sl6da8danr/branch/master?svg=true" style="max-width:100%;"></a> (Note: CI may need to be configured for this fork)
     </td>
   </tr>
   <tr>
@@ -152,15 +164,17 @@ If you want to **update a portable version**, you should delete all the files an
   </tr>
 </table>
 
+**Note for Fork Users**: Visual Studio and other extensions listed above are from the original project. This fork may require adjustments or custom extensions for full compatibility. Check the [docu/](docu/) directory for fork-specific documentation.
+
 # Conduct
 
 Project maintainers pledge to foster an open and welcoming environment, and ask contributors to do the same.
 
 For more information see our [code of conduct](CODE_OF_CONDUCT.md).
 
-# Shoutouts
+# Shoutouts (Original Project)
 
-* We thank all the people who contribute, the project exists because of you<br />
+* We thank all the people who contribute to the original project, the fork exists because of you<br />
   <a href="https://github.com/gitextensions/gitextensions/contributors"><img src="https://opencollective.com/gitextensions/contributors.svg?width=890&button=false" /></a>
 * We thank [Transifex](https://www.transifex.com/) for helping us with translations<br />
   <a href="https://www.transifex.com/" target="_blank"><img src="./src/app/GitUI/Resources/Icons/originals/transifex.svg"></a>
@@ -168,6 +182,10 @@ For more information see our [code of conduct](CODE_OF_CONDUCT.md).
   <a href="https://signpath.io/?utm_source=foundation&utm_medium=github&utm_campaign=gitextension" target="_blank"><img src="./src/app/GitUI/Resources/Icons/originals/signpath_logo.png"></a>
 * We thank [SignPath Foundation](https://signpath.org/?utm_source=foundation&utm_medium=github&utm_campaign=gitextension) for the signing certificate
 * We thank [Yusuke Kamiyamane](http://p.yusukekamiyamane.com/) for the icons ([CCA/3.0](http://creativecommons.org/licenses/by/3.0/))
+
+## Backers (Original Project)
+
+The following backers and sponsors are for the original GitExtensions project. This fork benefits from the original's community support.
 
 ## Backers
 
@@ -193,9 +211,10 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
 # Useful Links
 
 * Changelog: [CHANGELOG.md](CHANGELOG.md)
-* Website: [gitextensions.github.io](https://gitextensions.github.io/) [Git repo](https://github.com/gitextensions/gitextensions.github.io)
-* Source code: [github.com/gitextensions/gitextensions](https://github.com/gitextensions/gitextensions)
+* Source code: [github.com/AlexNek/gitextensions](https://github.com/AlexNek/gitextensions) (This fork)
+* Original source: [github.com/gitextensions/gitextensions](https://github.com/gitextensions/gitextensions)
+* Documentation: [docu/](docu/) (Fork-specific docs)
 * Online manual: [git-extensions-documentation.readthedocs.org](https://git-extensions-documentation.readthedocs.org/) [Git repo](https://github.com/gitextensions/GitExtensionsDoc)
-* Issue tracker: [github.com/gitextensions/gitextensions/issues](https://github.com/gitextensions/gitextensions/issues)
-* Wiki: [github.com/gitextensions/gitextensions/wiki](https://github.com/gitextensions/gitextensions/wiki)
+* Issue tracker: [github.com/AlexNek/gitextensions/issues](https://github.com/AlexNek/gitextensions/issues)
+* Original Wiki: [github.com/gitextensions/gitextensions/wiki](https://github.com/gitextensions/gitextensions/wiki) (No fork wiki yet)
 * Gitter chat: [gitter.im/gitextensions/gitextensions](https://gitter.im/gitextensions/gitextensions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
