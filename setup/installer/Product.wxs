@@ -67,9 +67,7 @@
         <File Id="set_telemetry.ps1" Source="..\assets\set-telemetry.ps1" />
       </Component>
       <Component Id="GitExtensions.exe" Guid="5530254F-DCAC-4C82-BD4B-F54D76024929">
-        <File Id="GitExtensions.exe" Source="$(var.ArtifactsPublishPath)\GitExtensions.exe" KeyPath="yes">
-          <netfx:NativeImage Id="ngen_GitExtensions.exe" Platform="all" Priority="1" />
-        </File>
+        <File Id="GitExtensions.exe" Source="$(var.ArtifactsPublishPath)\GitExtensions.exe" KeyPath="yes" />
         <ProgId Id="GitExtensions" Description="Git Extentions Shortcut" Advertise="no">
           <Extension Id="gitext">
             <Verb Id="open" Command="Open Git Extentions Repository" TargetFile="GitExtensions.exe" Argument="openrepo &quot;%1&quot;" />
