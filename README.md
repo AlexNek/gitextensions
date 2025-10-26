@@ -6,7 +6,7 @@ This is the AlexNek fork of Git Extensions, a standalone UI tool for managing gi
 
 This fork features custom architectural changes and faster development cycles compared to the original project.
 
-Have a question? Come and talk to us: [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gitextensions/gitextensions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or send us a tweet [![@git_extensions](https://img.shields.io/badge/twitter-%40git__extensions-blue)](https://twitter.com/git_extensions)
+Have a question? Come and talk to us (original project): [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gitextensions/gitextensions?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) or send us a tweet [![@git_extensions](https://img.shields.io/badge/twitter-%40git__extensions-blue)](https://twitter.com/git_extensions)
 
 ## Online manual
 
@@ -164,7 +164,7 @@ If you want to **update a portable version**, you should delete all the files an
   </tr>
 </table>
 
-**Note for Fork Users**: Visual Studio and other extensions listed above are from the original project. This fork may require adjustments or custom extensions for full compatibility. Check the [docu/](docu/) directory for fork-specific documentation.
+**Note for Fork Users**: Visual Studio and other extensions listed above are from the original project. This fork may require adjustments or custom extensions for full compatibility. The fork version will be installed in parallel with the original version by default. Check the [docu/](docu/) directory for fork-specific documentation.
 
 # Conduct
 
