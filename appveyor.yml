@@ -20,7 +20,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Use latest version of current used .NET version.  6.0 could use the latest of 6.0.  See .\Scripts\Update-DotnetVersion.ps1
   GE_USE_LATEST_DOTNET: true
-  ARTIFACT_PUBLISH_PULL_REQUEST_MSI: true
+  # ARTIFACT_PUBLISH_PULL_REQUEST_MSI: true
 
 pull_requests:
   do_not_increment_build_number: true
@@ -62,6 +62,11 @@ install:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
+- ps: |
+    # for release branches mark the repo as clean
+    if (!$env:APPVEYOR_PULL_REQUEST_TITLE -and ($env:APPVEYOR_REPO_BRANCH.StartsWith("release/") -or $env:APPVEYOR_REPO_TAG)) {
+      & .\eng\Mark-RepoClean.ps1
+    }
 - ps: |
     $buildArgs = '/p:ContinuousIntegrationBuild=true'
     # if building a PR override the hash with the PR commit's so the build contains the PR's hash instead of the merge-commit's hash
