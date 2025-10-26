@@ -13,11 +13,12 @@
   <?define MinSupportedVersion = '4.0.0' ?>
 
   <!-- Installation directory variables -->
-  <?define ProgramFilesDir = "$(env.ProgramFiles)" ?>
   <?if $(var.Platform) = x64 ?>
     <?define ProgramFilesDir = "$(env.ProgramFiles64)" ?>
   <?elseif $(var.Platform) = arm64 ?>
     <?define ProgramFilesDir = "$(env.ProgramFiles64)" ?>
+  <?else ?>
+    <?define ProgramFilesDir = "$(env.ProgramFiles)" ?>
   <?endif?>
 
 </Include>
