@@ -32,6 +32,7 @@ This guide is for developers who want to build, contribute to, or extend GitExte
 - **Debug**: For development with debugging symbols.
 - **Release**: Optimized for performance.
 - Target platform: Any CPU (x86/x64).
+$env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
 
 ## Project Structure
 - **src/app/**: Core application code.
