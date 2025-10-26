@@ -7,6 +7,12 @@ Param(
 # Normalize path by replacing double backslashes with single
 $ExtractRootPath = $ExtractRootPath -replace '\\\\', '\'
 
+# If the DLL already exists, skip
+if (Test-Path "$ExtractRootPath\GitExtensions.PluginManager.dll") {
+    Write-Host "PluginManager DLL already exists."
+    exit 0
+}
+
 Push-Location $PSScriptRoot
 
 try {
@@ -33,7 +39,7 @@ if (!($null -eq $AssetToDownload))
 
     $DownloadName = [System.IO.Path]::GetFileName($AssetToDownload.name);
     $DownloadFilePath = [System.IO.Path]::Combine($ExtractRootPath, $DownloadName);
-    $ExtractPath = [System.IO.Path]::Combine($ExtractRootPath, 'Output');
+    $ExtractPath = $ExtractRootPath;
 
     if (!(Test-Path $DownloadFilePath))
     {

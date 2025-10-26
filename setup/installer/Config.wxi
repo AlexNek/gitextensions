@@ -1,16 +1,23 @@
 ﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
   <?define Manufacturer = "Git Extensions Team" ?>
-  <?define ProductName = "Git Extensions" ?>
-  <?define InstallName = GitExtensions ?>
+  <?define ProductName = "Git Extensions (AN)" ?>
+  <?define InstallName = GitExtensionsAN ?>
 
-  <?define AppRegKey = "Software\GitExtensions" ?>
-  <?define InstalledRegKey = "Software\GitExtensions\Installed" ?>
+  <?define AppRegKey = "Software\GitExtensionsAN" ?>
+  <?define InstalledRegKey = "Software\GitExtensionsAN\Installed" ?>
 
   <!-- upgrade code never changes -->
-  <?define UpgradeCode = "140e80ea-5053-42dc-ab0e-6ff0e49e6bcf" ?>
-
+  <?define UpgradeCode = "00994f5b-4dd3-48f1-a8ba-dc923a540487" ?>
   <!-- Prevent upgrade from previous versions. This is the minimum required version to install -->
   <?define MinSupportedVersion = '4.0.0' ?>
+
+  <!-- Installation directory variables -->
+  <?define ProgramFilesDir = "$(env.ProgramFiles)" ?>
+  <?if $(var.Platform) = x64 ?>
+    <?define ProgramFilesDir = "$(env.ProgramFiles64)" ?>
+  <?elseif $(var.Platform) = arm64 ?>
+    <?define ProgramFilesDir = "$(env.ProgramFiles64)" ?>
+  <?endif?>
 
 </Include>

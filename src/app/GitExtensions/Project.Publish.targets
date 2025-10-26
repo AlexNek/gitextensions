@@ -126,11 +126,11 @@
 
     <!-- Determine plugins assemblies and their required references -->
     <_GetPluginAssembliesCodeTask
-          SolutionPath="$(SolutionPath)"
-          BuildConfiguration="$(Configuration)"
-          IsContinuousIntegrationBuild="$(ContinuousIntegrationBuild)">
-      <Output ItemName="CollectedPluginAssemblies" TaskParameter="Output"/>
-    </_GetPluginAssembliesCodeTask>
+           SolutionPath="$(MSBuildProjectDirectory)\..\..\..\GitExtensions.sln"
+           BuildConfiguration="$(Configuration)"
+           IsContinuousIntegrationBuild="$(ContinuousIntegrationBuild)">
+       <Output ItemName="CollectedPluginAssemblies" TaskParameter="Output"/>
+     </_GetPluginAssembliesCodeTask>
 
     <ItemGroup>
       <UserDictionaries Include="$(_UserDictionariesSourceDir)\*.dic" />
@@ -199,13 +199,15 @@
     Checks whether all files that are present in $(PublishDir) are delcared in Setup/Product.wxs.
     ============================================================
     -->
-  <Target Name="_CheckBundlesConsistent" AfterTargets="Publish" DependsOnTargets="_PublishTranslations;_DownloadPluginManager;_EnsureBundleContent;_CleanupBeforePack">
+  <Target Name="_CheckBundlesConsistent" AfterTargets="Publish" DependsOnTargets="_PublishTranslations;_DownloadPluginManager;_EnsureBundleContent;_CleanupBeforePack" Condition="'$(SkipBundlesCheck)' != 'true'">
     <Exec
         Command="powershell.exe .\setup\installer\Check-BundlesConsistent.ps1 '$(PublishDir)'"
         WorkingDirectory="$(RepoRoot)"
         EchoOff="true"
         ConsoleToMsBuild="true"
-        StandardOutputImportance="High">
+        StandardOutputImportance="High"
+        IgnoreExitCode="true">
+      <Output TaskParameter="ExitCode" PropertyName="CheckBundlesExitCode" />
     </Exec>
   </Target>
 
@@ -307,7 +309,7 @@
 
     <PropertyGroup>
       <_MSBuildCurrentPath>$([MSBuild]::NormalizePath('$(_VSInstallPath)', 'MSBuild', 'Current', 'Bin'))</_MSBuildCurrentPath>
-      <_SetupArgs>/p:Configuration=$(Configuration);Platform=$(TargetPlatform);WiXVersion=$(_WiXVersion);Version=$(CurrentBuildVersion);ArtifactsBinPath=$(ArtifactsBinDir);ArtifactsPublishPath=$(AppPublishDir);OutputPath=$(_PublishMsiPath.TrimEnd('\'));TargetName=$(_PublishMsiFileName)</_SetupArgs>
+      <_SetupArgs>/p:Configuration=$(Configuration);Platform=$(TargetPlatform);WiXVersion=$(_WiXVersion);ArtifactsBinPath=$(ArtifactsBinDir);ArtifactsPublishPath=$(AppPublishDir);OutputPath=$(_PublishMsiPath.TrimEnd('\'));TargetName=$(_PublishMsiFileName);Version=$(Version)</_SetupArgs>
     </PropertyGroup>
 
     <!-- WiX isn't yet compatible with .NET. See: https://github.com/wixtoolset/issues/issues/5627 

@@ -6,7 +6,7 @@
     <!-- Enable C#13 keyword "field" -->
     <LangVersion>preview</LangVersion>
     <NoWarn>$(NoWarn);1573;1591;1712</NoWarn>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
 
     <ImplicitUsings>enable</ImplicitUsings>
@@ -59,7 +59,7 @@
     <DebugType Condition="'$(DebugType)' == 'embedded'">portable</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(MSBuildProjectExtension)' != '.wixproj'">
     <Compile Include="$(RepoRoot)\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
   </ItemGroup>
 

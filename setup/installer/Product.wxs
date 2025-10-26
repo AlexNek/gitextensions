@@ -1,12 +1,8 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:netfx="http://wixtoolset.org/schemas/v4/wxs/netfx">
   <?include Config.wxi?>
-  <Package UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductName) $(var.Version)" Manufacturer="$(var.Manufacturer)" Version="$(var.NumericVersion)" Language="1033"><?if $(var.Platform) = x64 ?>
-    <StandardDirectory Id="ProgramFiles64Folder" />
-    <?elseif $(var.Platform) = arm64 ?>
-    <StandardDirectory Id="ProgramFiles64Folder" />
-    <?else?>
-    <StandardDirectory Id="ProgramFilesFolder" />
-    <?endif?>
+  <Package UpgradeCode="$(var.UpgradeCode)" Name="$(var.ProductName) $(var.Version)" Manufacturer="$(var.Manufacturer)" Version="$(var.NumericVersion)" Language="1033">
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <SummaryInformation Description="$(var.ProductName)" />
     <Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
     <!-- <Property Id="ALLUSERS" Value="1" /> -->
@@ -17,7 +13,6 @@
     <?include AddRemove.wxi?>
     <?include EnableUpgrades.wxi?>
     <UIRef Id="WixUI_GitExtensions" />
-    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
     <Property Id="LAUNCH" Value="0" />
     <Property Id="TELEMETRY_ENABLED" Value="1" Secure="yes" />
     <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
@@ -25,8 +20,43 @@
     <WixVariable Id="WixUIBannerBmp" Value="banner.bmp" />
     <WixVariable Id="WixUISupportPerUser" Value="1" Overridable="yes" />
     <WixVariable Id="WixUISupportPerMachine" Value="1" Overridable="yes" />
-    
-    <DirectoryRef Id="INSTALLDIR">
+
+   <?if $(var.Platform) = x64 ?>
+     <StandardDirectory Id="ProgramFiles64Folder">
+       <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+         <Directory Id="ThemesDir" Name="Themes" />
+         <Directory Id="PluginsDir" Name="Plugins" />
+         <Directory Id="DictionariesDir" Name="Dictionaries" />
+         <Directory Id="TranslationsDir" Name="Translation" />
+         <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
+         <Directory Id="DirConEmu" Name="ConEmu" />
+       </Directory>
+     </StandardDirectory>
+   <?elseif $(var.Platform) = arm64 ?>
+     <StandardDirectory Id="ProgramFiles64Folder">
+       <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+         <Directory Id="ThemesDir" Name="Themes" />
+         <Directory Id="PluginsDir" Name="Plugins" />
+         <Directory Id="DictionariesDir" Name="Dictionaries" />
+         <Directory Id="TranslationsDir" Name="Translation" />
+         <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
+         <Directory Id="DirConEmu" Name="ConEmu" />
+       </Directory>
+     </StandardDirectory>
+   <?else?>
+     <StandardDirectory Id="ProgramFilesFolder">
+       <Directory Id="INSTALLDIR" Name="$(var.InstallName)">
+         <Directory Id="ThemesDir" Name="Themes" />
+         <Directory Id="PluginsDir" Name="Plugins" />
+         <Directory Id="DictionariesDir" Name="Dictionaries" />
+         <Directory Id="TranslationsDir" Name="Translation" />
+         <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
+         <Directory Id="DirConEmu" Name="ConEmu" />
+       </Directory>
+     </StandardDirectory>
+   <?endif?>
+
+   <DirectoryRef Id="INSTALLDIR">
       <Component Id="gitextensions.ico">
         <File Id="git_extensions_logo.ico" Source="..\assets\Logo\git-extensions-logo.ico" />
       </Component>
@@ -204,11 +234,7 @@
       <?define ShellExCLSID = "{3C16B20A-BA16-4156-916F-0A375ECFFE24}"?>
       
       <Component Id="GitExtensionsShellEx64.dll" Condition="VersionNT64" Bitness="always64">
-        
-        <!-- File commented out -->
-        <?foreach ShellExFileName in GitExtensionsShellEx64.dll?>
-        <?include RegisterShellExtension.wxi?>
-        <?endforeach?>
+        <RegistryValue Root="HKCR" Key="Directory\Background\shellex\ContextMenuHandlers\GitExtensionsShellEx64.dll" Value="{3C16B20A-BA16-4156-916F-0A375ECFFE24}" Type="string" KeyPath="yes" />
       </Component>
       <!-- End shell extensions -->
       
@@ -836,8 +862,7 @@
         </Feature>
       </Feature>
       <Feature Id="ShellExtension" Title="Windows Explorer integration" Level="1">
-        
-        
+        <ComponentRef Id="GitExtensionsShellEx64.dll" />
       </Feature>
       <Feature Id="AddToPath" Title="Add installation directory to PATH" Level="1">
         <ComponentRef Id="Path" />
@@ -856,16 +881,9 @@
       <Custom Action="LaunchFile" After="InstallFinalize" Condition="( NOT Installed ) AND ( LAUNCH = &quot;1&quot; )" />
     </InstallExecuteSequence>
   
-      <Directory Id="INSTALLDIR">
-        <Directory Id="INSTALLFOLDER" Name="$(var.InstallName)">
-          <Directory Id="PluginsDir" Name="Plugins" />
-          <Directory Id="DictionariesDir" Name="Dictionaries" />
-          <Directory Id="TranslationsDir" Name="Translation" />
-          <Directory Id="DiffScriptsDir" Name="Diff-Scripts" />
-          <Directory Id="DirConEmu" Name="ConEmu" />
-          <Directory Id="ThemesDir" Name="Themes" />
-        </Directory>
-      </Directory>
+    </Package>
+
+    <Fragment>
       <StandardDirectory Id="LocalAppDataFolder">
         <Directory Id="LocalAppDataOrganizationDir" Name="GitExtensions">
           <Directory Id="UserPluginsDir" Name="UserPlugins">
@@ -889,5 +907,6 @@
       <Component Id="Path" Guid="{DAC97FD8-A869-4458-AABD-C27D2C892643}" Directory="TARGETDIR">
         <Environment Id="PATH" Name="PATH" Value="[INSTALLDIR]" Permanent="no" Part="last" Action="set" System="yes" />
       </Component>
-    </Package>
+
+    </Fragment>
 </Wix>

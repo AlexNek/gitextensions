@@ -11,8 +11,9 @@
     <OutputName>GitExtensions</OutputName>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <NoWarn>NU1507</NoWarn>
-    <PluginManagerSourceDir>eng\artifacts\Debug\publish\GitExtensions.PluginManager\Output</PluginManagerSourceDir>
-    <DefineConstants>Version=$(Version)-AN;NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)</DefineConstants>
+    <PluginManagerSourceDir>$(RepoRoot)\eng\artifacts\Debug\publish\GitExtensions.PluginManager\Output</PluginManagerSourceDir>
+    <ArtifactsPublishPath>$(RepoRoot)\artifacts\$(Configuration)\publish\GitExtensions</ArtifactsPublishPath>
+    <DefineConstants>Version=$(Version);NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)</DefineConstants>
     <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">Debug;$(DefineConstants)</DefineConstants>
     <SuppressIces>ICE61;ICE80;ICE91;ICE38</SuppressIces>
     <!-- Suppress: light.exe : error LGHT1105: Validation could not run due to system policy. To eliminate this warning, run the process as admin or suppress ICE validation. -->
@@ -43,6 +44,6 @@
     <Error Condition="!Exists('$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props'))" />
   </Target>-->
   <!-- <Target Name="DownloadPluginManager" BeforeTargets="BeforeBuild">
-    <Exec Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager')" Command="powershell.exe $(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)\GitExtensions.PluginManager'" />
+    <Exec Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager.dll')" Command="powershell.exe $(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)'" />
   </Target> -->
 </Project>
