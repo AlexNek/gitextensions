@@ -13,6 +13,7 @@ This fork represents a personal customization with different architectural views
 - **[Developer Guide](DeveloperGuide.md)**: Information for developers on building, contributing, and extending GitExtensions.
 - **[API Documentation](API.md)**: Reference for the plugin system and key interfaces.
 - **[Contributing](Contributing.md)**: Guidelines for contributing to this fork.
+- **[Auto-Update](AutoUpdate.md)**: Description of the auto-update mechanism for this fork.
 
 ## Getting Started
 

@@ -71,7 +71,7 @@ public partial class FormUpdates : GitExtensionsDialog
         try
         {
             Client github = new();
-            Repository gitExtRepo = github.getRepository("gitextensions", "gitextensions");
+            Repository gitExtRepo = github.getRepository("AlexNek", "gitextensions");
 
             GitHubReference configData = gitExtRepo?.GetRef("heads/configdata");
 
@@ -207,7 +207,7 @@ public partial class FormUpdates : GitExtensionsDialog
 
     private void LaunchUrl(LaunchType launchType)
     {
-        const string releases = @"https://github.com/gitextensions/gitextensions/releases";
+        const string releases = @"https://github.com/AlexNek/gitextensions/releases";
         switch (launchType)
         {
             case LaunchType.ChangeLog:
