@@ -32,6 +32,14 @@ This guide is for developers who want to build, contribute to, or extend GitExte
 - **Debug**: For development with debugging symbols.
 - **Release**: Optimized for performance.
 - Target platform: Any CPU (x86/x64).
+- run build like appveyour: $env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
+
+### Install the WiX v3 Toolset Globally (Legacy)
+
+1. Download **WiX v3.11.2** from:  
+   https://github.com/wixtoolset/wix3/releases/tag/wix3112rtm
+
+
 
 ## Project Structure
 - **src/app/**: Core application code.

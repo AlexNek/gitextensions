@@ -55,7 +55,7 @@ install:
 - cmd: git submodule update --init --recursive
 - cmd: |-
     cd eng
-    C:\\Python311\\python set_version_to.py -v %APPVEYOR_BUILD_VERSION% -t AN-%APPVEYOR_BUILD_VERSION%
+    python set_version_to.py -v %APPVEYOR_BUILD_VERSION% -t AN-%APPVEYOR_BUILD_VERSION%
     cd ..
     git --version
 
