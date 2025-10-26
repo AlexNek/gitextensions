@@ -107,6 +107,25 @@ after_test:
     Invoke-Expression $cmd
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 - ps: |
+    Write-Host "Building MSI..."
+    $version = $env:APPVEYOR_BUILD_VERSION
+    $platform = "x64"
+    $artifactsBin = "artifacts\Release\bin"
+    $artifactsPublish = "artifacts\Release\publish"
+    $outputPath = $artifactsPublish
+    $commitSuffix = ""
+    if ($env:GitCommit) {
+        $commitSuffix = "-" + $env:GitCommit
+    } elseif ($env:APPVEYOR_REPO_COMMIT) {
+        $commitSuffix = "-" + $env:APPVEYOR_REPO_COMMIT
+    } elseif ($env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT) {
+        $commitSuffix = "-" + $env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT
+    }
+    $targetName = "GitExtensions-$platform-$version$commitSuffix"
+    $msiArgs = "/p:Configuration=Release /p:Platform=$platform /p:Version=$version /p:ArtifactsBinPath=$artifactsBin /p:ArtifactsPublishPath=$artifactsPublish /p:OutputPath=$outputPath /p:TargetName=$targetName /p:WiXVersion=3.14.1"
+    msbuild setup\installer\Setup.wixproj $msiArgs /v:q /t:Build /bl:artifacts\log\msi.binlog
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+- ps: |
     if ($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null -and $env:ARTIFACT_PUBLISH_PULL_REQUEST_MSI -eq 'true') {
         $msi = (Resolve-Path .\artifacts\Release\publish\GitExtensions-*.msi)[0].Path;
         Get-ChildItem $msi | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
@@ -114,9 +133,12 @@ after_test:
 
 artifacts:
   - path: artifacts\Release\publish\*.zip
+  - path: artifacts\Release\publish\*.msi
 
 deploy:
 - provider: GitHub
+  auth_token:
+     secure: F/19bv2TYoeZ5LhzsKZUeVYgpbI53wUcX8RSHE9+T8CD1Q6tXF+3IBU5xe2YyQQx
   artifact: artifacts\Release\publish\*.zip, artifacts\Release\publish\*.msi
   release: $(APPVEYOR_BUILD_VERSION)
   draft: false
