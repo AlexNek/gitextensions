@@ -1,20 +1,35 @@
-﻿<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
+﻿<!--setup\installer\EnableUpgrades.wxi-->
+<Include xmlns="http://wixtoolset.org/schemas/v4/wxs">
 
-  <Upgrade Id="$(var.UpgradeCode)">
-    <UpgradeVersion Property="UPGRADE" Minimum="$(var.MinSupportedVersion)" Maximum="$(var.NumericVersion)" />
-    <UpgradeVersion Property="DONTUPGRADE" Maximum="$(var.MinSupportedVersion)" IncludeMaximum="no" />
-    <UpgradeVersion Minimum="0.0.0" Property="PREVIOUSVERSIONSINSTALLED" MigrateFeatures="yes" IncludeMinimum="yes" />
-  </Upgrade>
+    <!-- Custom upgrade logic for version range control -->
+    <Upgrade Id="$(var.UpgradeCode)">
+        <UpgradeVersion Property="DOWNGRADEFOUND" Minimum="$(var.NumericVersion)" IncludeMinimum="no" OnlyDetect="yes" />
+        <UpgradeVersion Property="UNSUPPORTEDOLDVERSION" Maximum="$(var.MinSupportedVersion)" IncludeMaximum="no" OnlyDetect="yes" />
+        <UpgradeVersion Minimum="0.0.0" Maximum="$(var.NumericVersion)" Property="PREVIOUSVERSIONSINSTALLED" IncludeMaximum="no" MigrateFeatures="yes" />
+    </Upgrade>
 
-  <Launch Condition="NOT (PREVIOUSVERSIONSINSTALLED AND DONTUPGRADE)" Message="The installed version is not upgradeable to $(var.Version).&#xD;&#xA;Uninstall the previous version first.&#xD;&#xA;&#xD;&#xA;Setup will now exit." />
+    <!-- Block downgrades and unsupported old versions -->
+    <Launch
+      Condition="NOT DOWNGRADEFOUND AND NOT UNSUPPORTEDOLDVERSION"
+      Message="The installed version is not upgradeable to $(var.Version).&#xD;&#xA;Uninstall the previous version first.&#xD;&#xA;&#xD;&#xA;Setup will now exit."
+  />
 
-   <!-- Upgrade WiX installations -->
-  <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowSameVersionUpgrades="yes" />
+    <!-- Use MajorUpgrade for standard upgrade flow, but disable downgrade error since we handle it via Launch -->
+    <MajorUpgrade
+      Schedule="afterInstallInitialize"
+      AllowSameVersionUpgrades="yes"
+      DowngradeErrorMessage="!(loc.DowngradeError)" />
 
-  <SetProperty After="FindRelatedProducts" Id="FirstInstall" Value="true" Condition="NOT Installed AND NOT WIX_UPGRADE_DETECTED AND NOT WIX_DOWNGRADE_DETECTED" />
-  <SetProperty After="SetFirstInstall" Id="Upgrading" Value="true" Condition="WIX_UPGRADE_DETECTED AND NOT (REMOVE=&quot;ALL&quot;)" />
-  <SetProperty After="RemoveExistingProducts" Id="RemovingForUpgrade" Sequence="execute" Value="true" Condition="(REMOVE=&quot;ALL&quot;) AND UPGRADINGPRODUCTCODE" />
-  <SetProperty After="SetUpgrading" Id="Uninstalling" Value="true" Condition="Installed AND (REMOVE=&quot;ALL&quot;) AND NOT (WIX_UPGRADE_DETECTED OR UPGRADINGPRODUCTCODE)" />
-  <SetProperty After="SetUninstalling" Id="Maintenance" Value="true" Condition="Installed AND NOT Upgrading AND NOT Uninstalling AND NOT UPGRADINGPRODUCTCODE" />
+    <!-- Define custom properties used in UI -->
+    <!-- Upgrading = true if this is an upgrade (not repair, not uninstall) -->
+    <SetProperty Id="Upgrading" Value="1" After="FindRelatedProducts"
+                 Condition="PREVIOUSVERSIONSINSTALLED AND NOT Installed" />
+
+    <!-- Optional: Uninstalling, Maintenance, etc. -->
+    <SetProperty Id="Uninstalling" Value="1" After="FindRelatedProducts"
+                 Condition="Installed AND (REMOVE=&quot;ALL&quot;) AND NOT PREVIOUSVERSIONSINSTALLED" />
+
+    <SetProperty Id="Maintenance" Value="1" After="FindRelatedProducts"
+                 Condition="Installed AND NOT REMOVE AND NOT PREVIOUSVERSIONSINSTALLED" />
 
 </Include>

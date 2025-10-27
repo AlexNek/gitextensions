@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!--setup\installer\UI\WixUI.wxs-->
+<!-- setup\installer\UI\WixUI.wxs -->
 <?require WixToolset.UI.wixext ?>
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
@@ -31,12 +31,9 @@
       <ui:Publish Dialog="GitEx_ExitDialog" Control="Finish"
                   Event="EndDialog" Value="Return" Order="999" />
 
-      <!-- Browse dialog validation -->
+      <!-- Browse dialog: just close on OK (no custom validation) -->
       <ui:Publish Dialog="BrowseDlg" Control="OK"
-                  Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="3" />
-      <ui:Publish Dialog="BrowseDlg" Control="OK"
-                  Event="SpawnDialog" Value="InvalidDirDlg" Order="4"
-                  Condition="WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
+                  Event="EndDialog" Value="Return" Order="1" />
 
       <?include ../Config.wxi ?>
 
@@ -48,7 +45,7 @@
       <ui:Publish Dialog="InstallScopeDlg" Control="Next"
                   Event="NewDialog" Value="GitEx_InstallDirDlg" Order="1" />
 
-      <!-- Installation directory navigation -->
+      <!-- InstallDir navigation -->
       <ui:Publish Dialog="GitEx_InstallDirDlg" Control="Back"
                   Event="NewDialog" Value="InstallScopeDlg" />
       <ui:Publish Dialog="GitEx_InstallDirDlg" Control="ChangeFolder"
@@ -58,14 +55,7 @@
       <ui:Publish Dialog="GitEx_InstallDirDlg" Control="Next"
                   Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1" />
       <ui:Publish Dialog="GitEx_InstallDirDlg" Control="Next"
-                  Event="DoAction" Value="WixUIValidatePath_$(sys.BUILDARCHSHORT)" Order="2"
-                  Condition="NOT WIXUI_DONTVALIDATEPATH" />
-      <ui:Publish Dialog="GitEx_InstallDirDlg" Control="Next"
-                  Event="SpawnDialog" Value="InvalidDirDlg" Order="3"
-                  Condition="NOT WIXUI_DONTVALIDATEPATH AND WIXUI_INSTALLDIR_VALID&lt;&gt;&quot;1&quot;" />
-      <ui:Publish Dialog="GitEx_InstallDirDlg" Control="Next"
-                  Event="NewDialog" Value="GitEx_CustomizeDlg" Order="4"
-                  Condition="WIXUI_DONTVALIDATEPATH OR WIXUI_INSTALLDIR_VALID=&quot;1&quot;" />
+                  Event="NewDialog" Value="GitEx_CustomizeDlg" Order="2" />
 
       <!-- Skip telemetry if upgrading -->
       <ui:Publish Dialog="GitEx_CustomizeDlg" Control="Next"

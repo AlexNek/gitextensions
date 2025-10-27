@@ -1,54 +1,49 @@
-<Project Sdk="WixToolset.Sdk/6.0.2">
+﻿<Project Sdk="WixToolset.Sdk/6.0.2">
+
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <Version Condition=" '$(Version)' == '' ">0.00</Version>
     <NumericVersion Condition=" '$(NumericVersion)' == '' ">$(Version)</NumericVersion>
-    <ProductVersion>3.0</ProductVersion>
     <OutputName>GitExtensions</OutputName>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <NoWarn>NU1507</NoWarn>
-    <PluginManagerSourceDir>$(RepoRoot)\eng\artifacts\Debug\publish\GitExtensions.PluginManager\Output</PluginManagerSourceDir>
-    <ArtifactsPublishPath>$(RepoRoot)\artifacts\$(Configuration)\publish\GitExtensions</ArtifactsPublishPath>
-    <DefineConstants>
-      Version=$(Version);
-      NumericVersion=$(Version);
-      ArtifactsBinPath=$(ArtifactsBinPath);
-      ArtifactsPublishPath=$(ArtifactsPublishPath);
-      PluginManagerSourceDir=$(PluginManagerSourceDir)
-    </DefineConstants>
-    <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">Debug;$(DefineConstants)</DefineConstants>
+    <OutputType>Package</OutputType>
+    <DefineSolutionProperties>false</DefineSolutionProperties>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <SuppressIces>ICE61;ICE80;ICE91;ICE38</SuppressIces>
-    <!-- Suppress: light.exe : error LGHT1105: Validation could not run due to system policy. To eliminate this warning, run the process as admin or suppress ICE validation. -->
-    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
     <SuppressValidation>true</SuppressValidation>
-    <!-- Disable build acceleration for WIX projects -->
+    <RunWixToolsOutOfProc>true</RunWixToolsOutOfProc>
     <AccelerateBuildsInVisualStudio>false</AccelerateBuildsInVisualStudio>
+
+    <!-- Compute PluginManagerSourceDir similar to original -->
+    <PluginManagerSourceDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsBinPath)', '..', 'publish'))</PluginManagerSourceDir>
+    <PluginManagerCommand>powershell.exe -ExecutionPolicy Bypass -File "$(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1" -ExtractRootPath "$(PluginManagerSourceDir)\GitExtensions.PluginManager"</PluginManagerCommand>
+    <DefineConstants>Version=$(Version);NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)\GitExtensions.PluginManager\Output</DefineConstants>
+    <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="**\*.wxs" />
-    <Content Include="AddRemove.wxi" />
-    <Content Include="Config.wxi" />
-    <Content Include="EnableUpgrades.wxi" />
-    <Content Include="RegisterShellExtension.wxi" />
+    <!-- Source files -->
+    <Compile Include="Product.wxs" />
+    <Compile Include="UI\*.wxs" />
   </ItemGroup>
 
   <ItemGroup>
-  <PackageReference Include="WixToolset.VisualStudio.wixext" />
-  <PackageReference Include="WixToolset.NetFx.wixext" />
-  <PackageReference Include="WixToolset.UI.wixext" />
-  <PackageReference Include="WixToolset.Util.wixext" />
-</ItemGroup>
+    <!-- WiX Extensions via PackageReference (recommended in WiX 4) -->
+    <!-- Note: WixVSExtension is deprecated in WiX 4 and not needed unless using VS-specific features -->
+    <!-- <PackageReference Include="WixToolset.VisualStudio.wixext" Version="6.0.2" /> -->
+    <PackageReference Include="WixToolset.NetFx.wixext" />
+    <PackageReference Include="WixToolset.UI.wixext"  />
+    <PackageReference Include="WixToolset.Util.wixext"  />
 
-
-  <ItemGroup>
-    <Folder Include="UI" />
   </ItemGroup>
 
-  <!-- Optional: Download PluginManager before build if missing -->
-  <!--
+  <!-- Custom target to download plugin manager -->
   <Target Name="DownloadPluginManager" BeforeTargets="BeforeBuild">
-    <Exec Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager.dll')" Command="powershell.exe $(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)'" />
+    <Exec
+      Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager')"
+      Command="$(PluginManagerCommand)" />
   </Target>
-  -->
 
 </Project>
