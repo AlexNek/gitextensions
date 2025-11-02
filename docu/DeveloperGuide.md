@@ -32,14 +32,30 @@ This guide is for developers who want to build, contribute to, or extend GitExte
 - **Debug**: For development with debugging symbols.
 - **Release**: Optimized for performance.
 - Target platform: Any CPU (x86/x64).
-- run build like appveyour: $env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
+- build native (need C++ installed)
+   dotnet build .\src\native\build.proj -c Release --verbosity q --nologo /bl:.\artifacts\log\native.binlog
+- build main
+   dotnet build -c Release --verbosity q --nologo /bl:.\artifacts\log\build.binlog $buildArgs
+- publish all
+   dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs
+
+$env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
+
+$env:ProgramFiles64 = "C:\Program Files"; dotnet build  setup\installer\Setup.wixproj /p:Configuration=Release /p:OutputPath=.\artifacts\log\install.wixobj
+It could be wrong
+<NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+setx NUGET_PACKAGES H:\NuGetPackages
+dotnet build setup\installer\Setup.wixproj /t:Build /p:ArtifactsBinPath=bin /p:ArtifactsPublishPath=publish
+- run build like appveyour: $env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build 
+/bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
 
 ### Install the WiX v3 Toolset Globally (Legacy)
 
 1. Download **WiX v3.11.2** from:  
    https://github.com/wixtoolset/wix3/releases/tag/wix3112rtm
 
-
+2. Add if setup can't be compiled
+<NugetPackages>\wix\3.14.1\tools\Microsoft.Build.Utilities.v4.0.dll 
 
 ## Project Structure
 - **src/app/**: Core application code.

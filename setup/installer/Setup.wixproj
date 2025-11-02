@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
-    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' And '$(NUGET_PACKAGES)' != '' ">$(NUGET_PACKAGES)\</NuGetPackageRoot>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' And '$(NUGET_PACKAGES)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+    <WiXVersion>3.14.1</WiXVersion>
     <WixPropsPath>$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props</WixPropsPath>
   </PropertyGroup>
-  <Import Project="$(WixPropsPath)" Condition="Exists('$(WixPropsPath)')" />
+  <PropertyGroup>
+    <AssemblySearchPaths>$(AssemblySearchPaths);$(MSBuildProjectDirectory)</AssemblySearchPaths>
+  </PropertyGroup>
+  <Import Project="$(WixPropsPath)" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -75,7 +80,7 @@
   <ItemGroup>
     <Folder Include="UI" />
   </ItemGroup>
-  <Import Project="$(WixTargetsPath)" Condition="Exists('$(WixTargetsPath)')" />
+  <Import Project="$(WixTargetsPath)" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
@@ -83,8 +88,8 @@
     <Error Condition="!Exists('$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props')" Text="$([System.String]::Format('$(ErrorText)', '$(NuGetPackageRoot)\WiX\$(WiXVersion)\build\wix.props'))" />
   </Target>
   <Target Name="DownloadPluginManager" BeforeTargets="BeforeBuild">
-    <Exec
-      Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager')"
-      Command="powershell.exe $(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)\GitExtensions.PluginManager'" />
-  </Target>
+     <Exec
+       Condition="!Exists('$(PluginManagerSourceDir)\GitExtensions.PluginManager')"
+       Command="powershell.exe -File $(MSBuildProjectDirectory)\..\..\eng\Download-PluginManager.ps1 -ExtractRootPath '$(PluginManagerSourceDir)\GitExtensions.PluginManager'" />
+   </Target>
 </Project>
