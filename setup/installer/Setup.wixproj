@@ -17,8 +17,10 @@
     <AccelerateBuildsInVisualStudio>false</AccelerateBuildsInVisualStudio>
 
     <!-- Compute PluginManagerSourceDir similar to original -->
+    <ArtifactsBinPath Condition=" '$(ArtifactsBinPath)' == '' ">$(MSBuildProjectDirectory)\..\artifacts\bin</ArtifactsBinPath>
+    <ArtifactsPublishPath Condition=" '$(ArtifactsPublishPath)' == '' ">$(MSBuildProjectDirectory)\..\publish</ArtifactsPublishPath>
     <PluginManagerSourceDir>$([MSBuild]::NormalizeDirectory('$(ArtifactsBinPath)', '..', 'publish'))</PluginManagerSourceDir>
-    <PluginManagerCommand>powershell.exe -ExecutionPolicy Bypass -File "$(MSBuildProjectDirectory)\..\eng\Download-PluginManager.ps1" -ExtractRootPath "$(PluginManagerSourceDir)\GitExtensions.PluginManager"</PluginManagerCommand>
+    <PluginManagerCommand>powershell.exe -ExecutionPolicy Bypass -File "$(MSBuildProjectDirectory)\..\..\eng\Download-PluginManager.ps1" -ExtractRootPath "$(PluginManagerSourceDir)\GitExtensions.PluginManager"</PluginManagerCommand>
     <DefineConstants>Version=$(Version);NumericVersion=$(Version);ArtifactsBinPath=$(ArtifactsBinPath);ArtifactsPublishPath=$(ArtifactsPublishPath);PluginManagerSourceDir=$(PluginManagerSourceDir)\GitExtensions.PluginManager\Output</DefineConstants>
     <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">Debug;$(DefineConstants)</DefineConstants>
   </PropertyGroup>

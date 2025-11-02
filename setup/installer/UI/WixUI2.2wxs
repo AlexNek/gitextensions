@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?require WixToolset.UI.wixext ?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <!-- Reference standard WixUI -->
+  <Fragment>
+    <UIRef Id="WixUI_Minimal" />
+  </Fragment>
+
+</Wix>
