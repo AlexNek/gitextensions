@@ -109,7 +109,10 @@ test_script:
 after_test:
 - ps: |
     Write-Host "Preparing build artifacts..."
-    & .\cibuild.cmd -publish -logFileName publish.binlog
+    dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+    # Build MSI after publish
+    dotnet msbuild .\src\app\GitExtensions\GitExtensions.csproj -t:CreateMsi -p:Configuration=Release /bl:.\artifacts\log\msi.binlog
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 - ps: |
     if ($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null -and $env:ARTIFACT_PUBLISH_PULL_REQUEST_MSI -eq 'true') {
