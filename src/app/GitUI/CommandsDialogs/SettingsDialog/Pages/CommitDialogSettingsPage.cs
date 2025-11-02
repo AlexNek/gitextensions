@@ -26,10 +26,14 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             chkAutocomplete.Checked = AppSettings.ProvideAutocompletion;
             cbRememberAmendCommitState.Checked = AppSettings.RememberAmendCommitState;
 
-            _selectedCommentStrategyId = AppSettings.CommentStrategyId;
+            int selectedCommentStrategyId = AppSettings.CommentStrategyId;
 
             // Select the item matching _selectedCommentStrategyId
-            SelectStrategyById(_selectedCommentStrategyId);
+    
+            var strategies = CommentStrategyFactory.GetAll();
+            cbCommentStrategy.DataSource = strategies;
+            cbCommentStrategy.DisplayMember = nameof(ICommentStrategy.Name);
+            SelectStrategyById(selectedCommentStrategyId);
 
             base.SettingsToPage();
         }
@@ -65,9 +69,6 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
 
         private void CommitDialogSettingsPage_Load(object sender, EventArgs e)
         {
-            var strategies = CommentStrategyFactory.GetAll();
-            cbCommentStrategy.DataSource = strategies;
-            cbCommentStrategy.DisplayMember = nameof(ICommentStrategy.Name);
         }
 
         private void cbCommentStrategy_SelectedIndexChanged(object sender, EventArgs e)
