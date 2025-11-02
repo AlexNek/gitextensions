@@ -29,7 +29,6 @@ namespace GitUI.CommandsDialogs.SettingsDialog.Pages
             int selectedCommentStrategyId = AppSettings.CommentStrategyId;
 
             // Select the item matching _selectedCommentStrategyId
-    
             var strategies = CommentStrategyFactory.GetAll();
             cbCommentStrategy.DataSource = strategies;
             cbCommentStrategy.DisplayMember = nameof(ICommentStrategy.Name);
