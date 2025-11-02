@@ -122,13 +122,15 @@ after_test:
 
 artifacts:
   - path: artifacts\Release\publish\*.zip
+    name: standalone
   - path: artifacts\Release\publish\*.msi
+    name: installer
 
 deploy:
 - provider: GitHub
   auth_token:
      secure: F/19bv2TYoeZ5LhzsKZUeVYgpbI53wUcX8RSHE9+T8CD1Q6tXF+3IBU5xe2YyQQx
-  artifact: artifacts\Release\publish\*.zip, artifacts\Release\publish\*.msi
+  artifact: standalone,installer
   release: $(APPVEYOR_BUILD_VERSION)
   draft: false
   prerelease: false
