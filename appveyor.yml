@@ -52,6 +52,7 @@ install:
       ./dotnet-install.ps1 -JsonFile global.json -InstallDir 'C:\Program Files\dotnet'
       # Remove the script so it doesn't "pollute" the build
       Remove-Item -Path .\dotnet-install.ps1
+- cmd: choco install wixtoolset --version 3.14.1
 - cmd: git submodule update --init --recursive
 - cmd: |-
     cd eng
@@ -108,8 +109,7 @@ test_script:
 after_test:
 - ps: |
     Write-Host "Preparing build artifacts..."
-    $cmd = "dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs"
-    Invoke-Expression $cmd
+    & .\cibuild.cmd -publish -logFileName publish.binlog
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 - ps: |
     if ($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null -and $env:ARTIFACT_PUBLISH_PULL_REQUEST_MSI -eq 'true') {
