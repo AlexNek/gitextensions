@@ -32,8 +32,23 @@ This guide is for developers who want to build, contribute to, or extend GitExte
 - **Debug**: For development with debugging symbols.
 - **Release**: Optimized for performance.
 - Target platform: Any CPU (x86/x64).
+
+build native (need C++ installed)
+    dotnet build .\src\native\build.proj -c Release --verbosity q --nologo /bl:.\artifacts\log\native.binlog
+
+build main
+dotnet build -c Release --verbosity q --nologo /bl:.\artifacts\log\build.binlog $buildArgs
+ publish all
+dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs
+
 $env:ProgramFiles64 = "C:\Program Files"; dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog /p:ContinuousIntegrationBuild=true
 
+$env:ProgramFiles64 = "C:\Program Files"; dotnet build  setup\installer\Setup.wixproj /p:Configuration=Release /p:OutputPath=.\artifacts\log\install.wixobj
+It could be wrong
+<NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+setx NUGET_PACKAGES H:\NuGetPackages
+dotnet build setup\installer\Setup.wixproj /t:Build /p:ArtifactsBinPath=bin /p:ArtifactsPublishPath=publish
+    
 ## Project Structure
 - **src/app/**: Core application code.
   - GitCommands: Git operations.
