@@ -26,18 +26,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - **Translations**: Updated English.xlf translation file with new strings and corrections.
 - **Documentation**: Updated contributors.txt file.
 
-### Added
-- GitHub deployment configuration added to CI/CD pipeline.
 
 ### Changed
-- Updated Wix installer project from Wix3 to Wix4 for improved build and installation processes.
-- Enhanced build configurations in Directory.Build.props, Directory.Packages.props, and related files.
+- Corrected Wix installer project .
 - Updated project version in installer settings.
 - Minor updates to README.md for clarity and accuracy.
 
 ### Fixed
-- Corrected tests path for unit tests execution.
-- Resolved warning errors and build issues in the project setup.
+- Corrected tests path for unit tests execution. No long integration tests now for actual build
 
 ## [Branch Comparison: an_master vs master]
 

@@ -1,11 +1,16 @@
 version: 6.1.0.{build}
 
 branches:
+  only:
+  - an_master
+  - AN_Wix3
   except:
     - configdata
     - gh-pages
     - /experimental\/*/
     - /translations_*/
+
+skip_tags: true
 
 matrix:
   fast_finish: true
@@ -20,7 +25,7 @@ environment:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   # Use latest version of current used .NET version.  6.0 could use the latest of 6.0.  See .\Scripts\Update-DotnetVersion.ps1
   GE_USE_LATEST_DOTNET: true
-  ARTIFACT_PUBLISH_PULL_REQUEST_MSI: true
+  # ARTIFACT_PUBLISH_PULL_REQUEST_MSI: true
 
 pull_requests:
   do_not_increment_build_number: true
@@ -52,6 +57,7 @@ install:
       ./dotnet-install.ps1 -JsonFile global.json -InstallDir 'C:\Program Files\dotnet'
       # Remove the script so it doesn't "pollute" the build
       Remove-Item -Path .\dotnet-install.ps1
+- cmd: choco install wixtoolset --version 3.14.1
 - cmd: git submodule update --init --recursive
 - cmd: |-
     cd eng
@@ -62,6 +68,11 @@ install:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
+- ps: |
+    # for release branches mark the repo as clean
+    if (!$env:APPVEYOR_PULL_REQUEST_TITLE -and ($env:APPVEYOR_REPO_BRANCH.StartsWith("release/") -or $env:APPVEYOR_REPO_TAG)) {
+      & .\eng\Mark-RepoClean.ps1
+    }
 - ps: |
     $buildArgs = '/p:ContinuousIntegrationBuild=true'
     # if building a PR override the hash with the PR commit's so the build contains the PR's hash instead of the merge-commit's hash
@@ -103,8 +114,10 @@ test_script:
 after_test:
 - ps: |
     Write-Host "Preparing build artifacts..."
-    $cmd = "dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs"
-    Invoke-Expression $cmd
+    dotnet publish -c Release --no-build /bl:.\artifacts\log\publish.binlog $buildArgs
+    if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
+    # Build MSI after publish
+    dotnet msbuild .\src\app\GitExtensions\GitExtensions.csproj -t:CreateMsi -p:Configuration=Release /bl:.\artifacts\log\msi.binlog
     if ($LastExitCode -ne 0) { $host.SetShouldExit($LastExitCode) }
 - ps: |
     if ($env:APPVEYOR_PULL_REQUEST_NUMBER -ne $null -and $env:ARTIFACT_PUBLISH_PULL_REQUEST_MSI -eq 'true') {
@@ -114,10 +127,15 @@ after_test:
 
 artifacts:
   - path: artifacts\Release\publish\*.zip
+    name: standalone
+  - path: artifacts\Release\publish\*.msi
+    name: installer
 
 deploy:
 - provider: GitHub
-  artifact: artifacts\Release\publish\*.zip, artifacts\Release\publish\*.msi
+  auth_token:
+     secure: F/19bv2TYoeZ5LhzsKZUeVYgpbI53wUcX8RSHE9+T8CD1Q6tXF+3IBU5xe2YyQQx
+  artifact: standalone,installer
   release: $(APPVEYOR_BUILD_VERSION)
   draft: false
   prerelease: false

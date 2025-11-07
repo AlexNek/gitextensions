@@ -39,7 +39,7 @@ if (!($null -eq $AssetToDownload))
 
     $DownloadName = [System.IO.Path]::GetFileName($AssetToDownload.name);
     $DownloadFilePath = [System.IO.Path]::Combine($ExtractRootPath, $DownloadName);
-    $ExtractPath = $ExtractRootPath;
+    $ExtractPath = [System.IO.Path]::Combine($ExtractRootPath, 'Output');
 
     if (!(Test-Path $DownloadFilePath))
     {
@@ -64,8 +64,7 @@ if (!($null -eq $AssetToDownload))
     }
 }
 else {
-    Write-Host "PluginManager release not found."
-    exit 0
+    throw "PluginManager release not found.";
 }
 
 Pop-Location
