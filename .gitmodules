@@ -7,3 +7,7 @@
 [submodule "Externals/ICSharpCode.TextEditor"]
 	path = externals/ICSharpCode.TextEditor
 	url = ../../gitextensions/ICSharpCode.TextEditor.git
+[submodule "gitextensions.wiki"]
+	path = gitextensions.wiki
+	url = https://github.com/AlexNek/gitextensions.wiki.git
+	branch = master
