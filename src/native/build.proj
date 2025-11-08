@@ -28,12 +28,6 @@
         <Output TaskParameter="ConsoleOutput" PropertyName="_VSInstallPath" />
     </Exec>
 
-    <Exec
-        Command="powershell -Command "(Get-ItemProperty 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Microsoft SDKs\Windows\v10.0' -Name ProductVersion).ProductVersion""
-        ConsoleToMsBuild="true">
-        <Output TaskParameter="ConsoleOutput" PropertyName="_WindowsSdkVersion" />
-    </Exec>
-    <Message Text="_WindowsSdkVersion: $(_WindowsSdkVersion)" />
     <PropertyGroup>
       <_ArtifactsLogDir>$([MSBuild]::NormalizePath('$(ArtifactsLogDir)', '..', '..', 'log'))</_ArtifactsLogDir>
       <_OutputPath>$([System.IO.Path]::GetFullPath('$(ArtifactsBinDir)\'))</_OutputPath>
@@ -51,7 +45,7 @@
     <!-- Build GitExtSshAskPass project, x86 -->
     <Exec
         Condition="'$(TargetPlatform)' != 'arm64'"
-        Command="msbuild.exe $(_GitExtSshAskPassPath) $(_ProjectArgs32) /p:OutDir=$(_OutputPath)GitExtSshAskPass\ /p:WindowsSdkDir=$(_WindowsSdkDir) /p:WindowsTargetPlatformVersion=$(_WindowsSdkVersion) /bl:$(_ArtifactsLogDir)\GitExtSshAskPass.binlog"
+        Command="msbuild.exe $(_GitExtSshAskPassPath) $(_ProjectArgs32) /p:OutDir=$(_OutputPath)GitExtSshAskPass\ /bl:$(_ArtifactsLogDir)\GitExtSshAskPass.binlog"
         WorkingDirectory="$(_MSBuildCurrentPath)"
         EchoOff="true"
         ConsoleToMsBuild="true"
@@ -60,7 +54,7 @@
     <!-- Build GitExtSshAskPass project, ARM64 -->
     <Exec
         Condition="'$(TargetPlatform)' == 'arm64'"
-        Command="msbuild.exe $(_GitExtSshAskPassPath) $(_ProjectArgsARM64) /p:OutDir=$(_OutputPath)GitExtSshAskPass\ /p:WindowsSdkDir=$(_WindowsSdkDir) /p:WindowsTargetPlatformVersion=$(_WindowsSdkVersion) /bl:$(_ArtifactsLogDir)\GitExtSshAskPass.binlog"
+        Command="msbuild.exe $(_GitExtSshAskPassPath) $(_ProjectArgsARM64) /p:OutDir=$(_OutputPath)GitExtSshAskPass\ /bl:$(_ArtifactsLogDir)\GitExtSshAskPass.binlog"
         WorkingDirectory="$(_MSBuildCurrentPath)"
         EchoOff="true"
         ConsoleToMsBuild="true"
@@ -69,7 +63,7 @@
     <!-- Build GitExtensionsShellEx project, x86 -->
     <Exec
         Condition="'$(TargetPlatform)' != 'arm64'"
-        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgs32) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /p:WindowsSdkDir=$(_WindowsSdkDir) /p:WindowsTargetPlatformVersion=$(_WindowsSdkVersion) /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx32.binlog"
+        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgs32) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx32.binlog"
         WorkingDirectory="$(_MSBuildCurrentPath)"
         EchoOff="true"
         ConsoleToMsBuild="true"
@@ -78,7 +72,7 @@
     <!-- Build GitExtensionsShellEx project, x64 -->
     <Exec
         Condition="'$(TargetPlatform)' != 'arm64'"
-        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgs64) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /p:WindowsSdkDir=$(_WindowsSdkDir) /p:WindowsTargetPlatformVersion=$(_WindowsSdkVersion) /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx64.binlog"
+        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgs64) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx64.binlog"
         WorkingDirectory="$(_MSBuildCurrentPath)"
         EchoOff="true"
         ConsoleToMsBuild="true"
@@ -87,7 +81,7 @@
     <!-- Build GitExtensionsShellEx project, ARM64 -->
     <Exec
         Condition="'$(TargetPlatform)' == 'arm64'"
-        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgsARM64) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /p:WindowsSdkDir=$(_WindowsSdkDir) /p:WindowsTargetPlatformVersion=$(_WindowsSdkVersion) /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx64.binlog"
+        Command="msbuild.exe $(_GitExtensionsShellExPath) $(_ProjectArgsARM64) /p:OutDir=$(_OutputPath)GitExtensionsShellEx\ /bl:$(_ArtifactsLogDir)\GitExtensionsShellEx64.binlog"
         WorkingDirectory="$(_MSBuildCurrentPath)"
         EchoOff="true"
         ConsoleToMsBuild="true"
